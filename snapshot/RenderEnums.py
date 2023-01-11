@@ -3,8 +3,12 @@ from enum import IntEnum
 
 class ChatBubbleType(IntEnum):
     Random = 0
-    Normal = 1
-    Thought = 2
+    Normal = 1  # CFSpeech
+    Thought = 2  # CFThought
+
+
+class ChatFlag(IntEnum):
+    Timeout = 8  # CFTimeout, only here for accommodation
 
 
 class EyeType(IntEnum):
@@ -15,6 +19,8 @@ class EyeType(IntEnum):
     AngryClosed = 4
     SadOpen = 5
     SadClosed = 6
+    ShockOpen = 7
+    ShockClosed = 8
 
 
 class MuzzleType(IntEnum):
@@ -24,6 +30,7 @@ class MuzzleType(IntEnum):
     Laugh = 3
     Sad = 4
     Shock = 5
+    Smile = 6
 
 
 class FrameType(IntEnum):
