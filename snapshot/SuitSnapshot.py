@@ -5,10 +5,17 @@ import time
 from panda3d.core import LVecBase3f, deg2Rad, Vec3
 
 import random
-from panda3d.otp import CFSpeech, CFTimeout
 
-from modtools.extensions.toon_snapshot.snapshot.RenderEnums import RenderType, ChatBubbleType
+from modtools.extensions.toon_snapshot import SNAPSHOT_DEBUG
+from modtools.extensions.toon_snapshot.snapshot.RenderEnums import RenderType, ChatBubbleType, ChatFlag
 from modtools.extensions.toon_snapshot.snapshot.SnapshotBase import SnapshotBase
+
+try:
+    from panda3d.otp import CFSpeech, CFTimeout
+except:
+    CFSpeech = ChatBubbleType.Speech
+    CFTimeout = ChatFlag.Timeout
+
 
 if __name__ == "__main__":
     from modtools.modbase import ModularStart
@@ -26,6 +33,9 @@ from modtools.extensions.toon_snapshot.snapshot.SnapshotExpressions import SuitE
 class SuitSnapshot(SnapshotBase):
     notify = DirectNotifyGlobal.directNotify.newCategory('SuitSnapshot')
     notify.showTime = 1
+
+    if SNAPSHOT_DEBUG:
+        notify.setDebug(1)
 
     # notify.setDebug(1)
 
@@ -74,7 +84,7 @@ class SuitSnapshot(SnapshotBase):
         expressionSet = SuitExpressions[self.actor.dna.body]
         if randomExpression:
             expressionID = random.randint(1, len(expressionSet.keys()))
-            print(f"expressionID: {expressionID}")
+            self.notify.debug(f"expressionID: {expressionID}")
         self.poseShot(expressionSet.get(expressionID), wantNametag, bodyShot = bodyShot, customPhrase=customPhrase, chatBubbleType = chatBubbleType)
 
 
@@ -150,7 +160,7 @@ class SuitSnapshot(SnapshotBase):
             head = self.actor.getHeadParts()[0]
             headParent = head.getParent()
             # Temporarily reparent head to render to get bounds aligned with render
-            head.wrtReparentTo(render)
+            head.wrtReparentTo(self.render)
 
             # Where is center of head in render space?
             p1, p2 = head.getTightBounds()
@@ -167,8 +177,8 @@ class SuitSnapshot(SnapshotBase):
             c, height = calcBodyBounds()
 
         # Move camera there
-        camera.setHpr(render, 0, 0, 0)
-        camera.setPos(render, c)
+        camera.setHpr(self.render, 0, 0, 0)
+        camera.setPos(self.render, c)
         # Move it back to fit around the target
         offset = ((height / 2.0) / tan(deg2Rad((fillFactor * effectiveFOV) / 2.0)))
         camera.setY(camera, -offset)
