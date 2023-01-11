@@ -10,10 +10,10 @@ WARNING:
 
 """
 
-from panda3d.core import Filename
-
-import direct
-from panda3d.core import *
+from panda3d.core import (
+    Filename, GraphicsPipeSelection, GraphicsEngine, WindowProperties, FrameBufferProperties,
+    GraphicsPipe, Texture, NodePath, Camera
+)
 
 
 class OffscreenRenderBuffer:
@@ -21,7 +21,7 @@ class OffscreenRenderBuffer:
     Opens an offscreen buffer for simple, lightweight renderingm without adversely impacting other code (much).
     """
 
-    def __init__(self, xsize, ysize):
+    def __init__(self, xsize: int, ysize: int):
         # Get the graphics pipe.
         selection = GraphicsPipeSelection.getGlobalPtr()
 
