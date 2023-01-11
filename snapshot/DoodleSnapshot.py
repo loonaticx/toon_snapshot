@@ -2,20 +2,21 @@ from panda3d.core import LVecBase3f
 
 import random
 
-# initial constants #
-# X and Y should be the same res (1:1), else there will be weird aspect ratio issues.
-from panda3d.otp import CFSpeech, CFTimeout
+from modtools.extensions.toon_snapshot import SNAPSHOT_DEBUG
+from modtools.extensions.toon_snapshot.snapshot.RenderEnums import RenderType, ChatBubbleType, ChatFlag
 
-from modtools.extensions.toon_snapshot.snapshot.RenderEnums import RenderType, ChatBubbleType
-
-x = y = 1024
-headless = True
+try:
+    from panda3d.otp import CFSpeech, CFTimeout
+except:
+    CFSpeech = ChatBubbleType.Speech
+    CFTimeout = ChatFlag.Timeout
 
 if __name__ == "__main__":
-    from modular.toontown.toonbase import ModularStart
-    from modular.toontown.toonbase.ModularBase import ModularBase
+    from modtools.modbase import ModularStart
+    from modtools.modbase.ModularBase import ModularBase
 
-    base = ModularBase()
+    base = ModularBase(wantHotkeys = False)
+    base.initNametagGlobals()
 
 from toontown.pets import PetDNA, Pet
 
@@ -26,12 +27,15 @@ from modtools.extensions.toon_snapshot.snapshot.SnapshotBase import SnapshotBase
 
 
 class DoodleSnapshot(SnapshotBase):
-    notify = DirectNotifyGlobal.directNotify.newCategory('ToonSnapshot')
+    notify = DirectNotifyGlobal.directNotify.newCategory('DoodleSnapshot')
     notify.showTime = 1
+
+    if SNAPSHOT_DEBUG:
+        notify.setDebug(1)
 
     # notify.setDebug(1)
 
-    def __init__(self, x=1024, y=1024, headless=False, filename="toon.png"):
+    def __init__(self, x=1024, y=1024, headless=False, filename="doodle.png"):
         """
         :param int x: Width resolution of buffer image.
         :param int y: Height resolution of buffer image.
@@ -70,9 +74,10 @@ class DoodleSnapshot(SnapshotBase):
 
         if randomExpression:
             expressionID = random.randint(1, len(DoodleExpressions.keys()))
-        self.poseShot(DoodleExpressions.get(expressionID), wantNametag, customPhrase=customPhrase, chatBubbleType = chatBubbleType)
+        self.poseShot(DoodleExpressions.get(expressionID), wantNametag, customPhrase = customPhrase,
+                      chatBubbleType = chatBubbleType)
 
-        print(f"expression id = {expressionID}")
+        self.notify.debug(f"expression id = {expressionID}")
 
     def poseShot(self, expression, wantNametag, customPhrase, chatBubbleType):
         """
@@ -96,8 +101,10 @@ class DoodleSnapshot(SnapshotBase):
         self.actor.pose(anim, frame)
 
         # Configure custom dialog if any
+        # random.choice(TTLocalizer.SpokenMoods[mood])
         if customPhrase:
-            self.actor.setChatAbsolute(customPhrase, chatBubbleType | CFTimeout)
+            self.actor.nametag.setChat(customPhrase, chatBubbleType)
+            # self.actor.setChatAbsolute(customPhrase, chatBubbleType | CFTimeout)
 
     def cleanup(self):
         """
@@ -107,6 +114,8 @@ class DoodleSnapshot(SnapshotBase):
 
 
 if __name__ == "__main__":
+    x = y = 1024
+    headless = True
     snapshot = DoodleSnapshot(x, y, headless)
     snapshot.loadDoodle()
     snapshot.doSnapshot()
