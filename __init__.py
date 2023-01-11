@@ -21,14 +21,18 @@ loadPrcFile('modtools/extensions/toon_snapshot/config/config_snapshot.prc')
 SNAPSHOT_HOST = ConfigVariableString("snapshot-host", "localhost").getValue()
 SNAPSHOT_PORT = ConfigVariableInt("snapshot-port", 20151).getValue()
 SNAPSHOT_HEADLESS = ConfigVariableBool("snapshot-headless", 1).getValue()
+SNAPSHOT_DEBUG = ConfigVariableBool("snapshot-debug", 0).getValue()
 
 SNAPSHOT_RES = ConfigVariableInt("snapshot-res", 1024).getValue()
 SNAPSHOT_EXTENSION = ConfigVariableString("snapshot-extension", ".png").getValue()
 SNAPSHOT_DIR = ConfigVariableString("snapshot-dir", "out").getValue()
-ConfigVariableBool("snapshot-trim-whitespace", 1)
+SNAPSHOT_PREFIX = ConfigVariableString("snapshot-prefix", "render_").getValue()
+SNAPSHOT_KEEP_RENDERS = ConfigVariableBool("snapshot-keep-renders", 0)
+SNAPSHOT_CLEANUP_TIME = ConfigVariableBool("snapshot-cleanup-time", 60)
+SNAPSHOT_TRIM_WHITESPACE = ConfigVariableBool("snapshot-trim-whitespace", 1)
 
 DISCORD_TOKEN = ConfigVariableString("snapshot-discord-token", "unknown").getValue()
-DISCORD_GUILD = ConfigVariableString("snapshot-discord-guild", '-1').getValue()
+DISCORD_GUILD = ConfigVariableString("snapshot-discord-guild", 'none').getValue()
 
 # Graphics config
 loadPrcFileData("", "framebuffer-multisample 1")
