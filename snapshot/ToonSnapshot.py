@@ -10,20 +10,12 @@ Todo features:
     Cheesy Effects
     Toon DNA String support
 
-For debugging / modifying, set headless to False for opening a window instead (does not screenshot)
 """
 from panda3d.core import LVecBase3f, Vec3, deg2Rad
 
 import random
 from math import tan
-
-
-# initial constants #
-# X and Y should be the same res (1:1), else there will be weird aspect ratio issues.
-from modtools.extensions.toon_snapshot.snapshot.RenderEnums import RenderType, ChatBubbleType
-
-x = y = 1024
-headless = False
+from modtools.extensions.toon_snapshot.snapshot.RenderEnums import RenderType, ChatBubbleType, ChatFlag, MuzzleType
 
 if __name__ == "__main__":
     from modtools.modbase import ModularStart
@@ -39,13 +31,21 @@ from toontown.toon import NPCToons
 from modtools.extensions.toon_snapshot.snapshot.SnapshotBase import SnapshotBase
 from modtools.extensions.toon_snapshot.snapshot.SnapshotExpressions import ToonExpressions
 from toontown.makeatoon.NameGenerator import NameGenerator
-from panda3d.otp import CFSpeech, CFThought, CFTimeout, CFPageButton, CFNoQuitButton, CFQuitButton
-from .. import OP_DIR
+
+try:
+    from panda3d.otp import CFSpeech, CFTimeout
+except:
+    CFSpeech = ChatBubbleType.Speech
+    CFTimeout = ChatFlag.Timeout
+from .. import SNAPSHOT_DEBUG, OP_DIR
 
 
 class ToonSnapshot(SnapshotBase):
     notify = DirectNotifyGlobal.directNotify.newCategory('ToonSnapshot')
     notify.showTime = 1
+
+    if SNAPSHOT_DEBUG:
+        notify.setDebug(1)
 
     # notify.setDebug(1)
 
@@ -84,6 +84,7 @@ class ToonSnapshot(SnapshotBase):
         :param dnaString: resultant makeNetString() else None
         :type accData: list
         :param int expressionID: key id for SnapshotExpressions dict
+        :param muzzleType: Override muzzle type
         """
         # Don't load in a new Toon if one already exists right now
         if self.actor:
@@ -116,7 +117,6 @@ class ToonSnapshot(SnapshotBase):
         self.loadAccessories(accData)
         self.prepareActor(wantNametag)
 
-
         # Tall toons are too tall for the window. If they fall under this, we'll shrink their scale down a bit.
         longTorso = self.actor.style.torso in ["ld", "ls"]
         longLegs = self.actor.style.legs == "l"
@@ -135,11 +135,10 @@ class ToonSnapshot(SnapshotBase):
         self.poseShot(
             expression = ToonExpressions.get(expressionID),
             bodyShot = bodyShot, wantNametag = wantNametag, customPhrase = customPhrase,
-            chatBubbleType=chatBubbleType
+            chatBubbleType = chatBubbleType, muzzleType=muzzleType
         )
 
-
-        #useful functions for later
+        # useful functions for later
         # reapplyCheesyEffect
         # putOnSuit
 
@@ -158,7 +157,8 @@ class ToonSnapshot(SnapshotBase):
         self.actor.setBackpack(ad[6], ad[7], ad[8])
         self.actor.setShoes(ad[9], ad[10], ad[11])
 
-    def poseShot(self, expression, wantNametag, bodyShot=True, customPhrase=None, speedchatPhrase=None, chatBubbleType=ChatBubbleType.Normal):
+    def poseShot(self, expression, wantNametag, bodyShot=True, customPhrase=None, speedchatPhrase=None,
+                 chatBubbleType=ChatBubbleType.Normal, muzzleType=None):
         """
         Image that contains the fullbody of the Toon.
 
@@ -168,7 +168,8 @@ class ToonSnapshot(SnapshotBase):
         anim = expression[0]
         frame = expression[1]
         eyeType = expression[2]
-        muzzleType = expression[3]
+        if not muzzleType:
+            muzzleType = expression[3]
         offTrans = expression[4]
         offRot = expression[5]
         offScale = expression[6]
@@ -233,7 +234,7 @@ class ToonSnapshot(SnapshotBase):
             head = self.actor.getPart('head', '1000')
             headParent = head.getParent()
             # Temporarily reparent head to render to get bounds aligned with render
-            head.wrtReparentTo(render)
+            head.wrtReparentTo(self.render)
             # Look for explicitly named ears and stash them
             ears = head.findAllMatches('**/ear*')
             # And stash them before computing bounds
@@ -269,8 +270,8 @@ class ToonSnapshot(SnapshotBase):
             c, height = calcBodyBounds()
 
         # Move camera there
-        camera.setHpr(render, 0, 0, 0)
-        camera.setPos(render, c)
+        camera.setHpr(self.render, 0, 0, 0)
+        camera.setPos(self.render, c)
         # Move it back to fit around the target
         offset = ((height / 2.0) / tan(deg2Rad((fillFactor * effectiveFOV) / 2.0)))
         camera.setY(camera, -offset)
@@ -283,6 +284,9 @@ class ToonSnapshot(SnapshotBase):
 
 
 if __name__ == "__main__":
+    # For debugging / modifying, set headless to False for opening a window instead (does not screenshot)
+    x = y = 1024
+    headless = False
     snapshot = ToonSnapshot(x, y, headless)
     # snapshot.loadToon(random = True, expressionID = random.randint(1, 14))  # loads in random toon w/ random pose
     randNpcID = random.choice(list(NPCToons.NPCToonDict.items()))[0]
