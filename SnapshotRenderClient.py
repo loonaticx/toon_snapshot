@@ -13,10 +13,14 @@ response = "none"
 
 async def requestRender(renderParams: dict):
     global response
-    print(renderParams)
+    response = "none"
+    if not renderParams:
+        return
+    # try to mitigate dupe picture sending?
+    await asyncio.sleep(1)
     async with websockets.connect(f'ws://{host}:{port}') as websocket:
         await websocket.send(json.dumps(renderParams))
         response = await websocket.recv()
-        print(response)
+    return response
 
 # asyncio.get_event_loop().run_until_complete(test())
