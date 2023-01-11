@@ -72,7 +72,7 @@ class ToonSnapshot(SnapshotBase):
 
     def loadToon(self, randomDNA=True, npcID=None, dnaString=None, accData=None, expressionID=1, randomExpression=True,
                  bodyShot=True, wantNametag=True, customName=None, customPhrase=None, speedchatPhrase=None,
-                 chatBubbleType = ChatBubbleType.Normal
+                 chatBubbleType=ChatBubbleType.Normal, muzzleType=None
                  ):
         """
         Loads a specified Toon to be rendered out.
@@ -202,17 +202,18 @@ class ToonSnapshot(SnapshotBase):
         """
         :param str muzzleType: random, smile, sad, angry, laugh, shocked, normal
         """
-        if muzzleType == "random":
-            muzzleType = random.choice(["smile", "sad", "angry", "laugh", "shocked", "normal"])
-        if muzzleType == "smile":
+        if muzzleType == MuzzleType.Random:
+            # Seems hacky, but it's just a shortcut.
+            muzzleType = random.randint(1, 6)
+        if muzzleType == MuzzleType.Random:
             self.actor.showSmileMuzzle()
-        elif muzzleType == "sad":
+        elif muzzleType == MuzzleType.Sad:
             self.actor.showSadMuzzle()
-        elif muzzleType == "angry":
+        elif muzzleType == MuzzleType.Angry:
             self.actor.showAngryMuzzle()
-        elif muzzleType == "laugh":
+        elif muzzleType == MuzzleType.Laugh:
             self.actor.showLaughMuzzle()
-        elif muzzleType in ["shocked", "surprised"]:
+        elif muzzleType == MuzzleType.Shock:
             self.actor.showSurpriseMuzzle()
 
     def lookAtToon(self, lookAtTarget='head'):

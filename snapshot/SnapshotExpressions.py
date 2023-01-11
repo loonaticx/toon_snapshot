@@ -1,6 +1,8 @@
 """
 Module that holds various dictionaries for actor expression values.
 """
+from modtools.extensions.toon_snapshot.snapshot.RenderEnums import MuzzleType, EyeType
+
 
 """
 # Toon Expressions #
@@ -11,20 +13,20 @@ muzzleType = default, sad, smile, angry, shocked, laugh
 offScale = aren't added on, but used as a multiplier instead (please don't do negative numbers)
 """
 ToonExpressions = {
-    1: ["neutral", 0, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
-    2: ["good-putt", 11, "default", "smile", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # YEAH!!
-    3: ["bored", 94, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Bored (1)
-    4: ["bored", 141, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Bored (2)
-    5: ["smooch", 137, "default", "shocked", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Look at this!
-    6: ["hypnotize", 9, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # I don't meany any trouble...
-    7: ["toss", 31, "default", "default", (0, 0, 0), (0, 0, 0), (0.9, 0.9, 0.9)],  # Gimmie it. Now.
-    8: ["duck", 13, "shocked", "shocked", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # WOAAH there...
-    9: ["victory", 8, "default", "default", (0, 0, 0), (0, 0, 0), (0.85, 0.85, 0.85)],  # VICTORY!
-    10: ["victory", 112, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # The W pose.
-    11: ["wave", 58, "default", "smile", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Hello!
-    12: ["think", 33, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Hmm..
-    13: ["applause", 22, "default-closed", "laugh", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Applause!
-    14: ["sidestep-left", 38, "default-closed", "default", (-2.5, 0, 0), (-15, 0, 0), (0.85, 0.85, 0.85)],  # On side.
+    1: ["neutral", 0, EyeType.NormalOpen, MuzzleType.Neutral, (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+    2: ["good-putt", 11, EyeType.NormalOpen, MuzzleType.Smile, (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # YEAH!!
+    3: ["bored", 94, EyeType.NormalOpen, MuzzleType.Neutral, (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Bored (1)
+    4: ["bored", 141, EyeType.NormalOpen, MuzzleType.Neutral, (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Bored (2)
+    5: ["smooch", 137, EyeType.NormalOpen, MuzzleType.Shock, (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Look at this!
+    6: ["hypnotize", 9, EyeType.NormalOpen, MuzzleType.Neutral, (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # I don't meany any trouble...
+    7: ["toss", 31, EyeType.NormalOpen, MuzzleType.Neutral, (0, 0, 0), (0, 0, 0), (0.9, 0.9, 0.9)],  # Gimmie it. Now.
+    8: ["duck", 13, EyeType.ShockOpen, MuzzleType.Shock, (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # WOAAH there...
+    9: ["victory", 8, EyeType.NormalOpen, MuzzleType.Neutral, (0, 0, 0), (0, 0, 0), (0.85, 0.85, 0.85)],  # VICTORY!
+    10: ["victory", 112, EyeType.NormalOpen, MuzzleType.Neutral, (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # The W pose.
+    11: ["wave", 58, EyeType.NormalOpen, MuzzleType.Smile, (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Hello!
+    12: ["think", 33, EyeType.NormalOpen, MuzzleType.Neutral, (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Hmm..
+    13: ["applause", 22, EyeType.NormalOpen, MuzzleType.Laugh, (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Applause!
+    14: ["sidestep-left", 38, EyeType.NormalOpen, MuzzleType.Neutral, (-2.5, 0, 0), (-15, 0, 0), (0.85, 0.85, 0.85)],  # On side.
 
 }
 
