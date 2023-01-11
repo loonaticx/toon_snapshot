@@ -25,6 +25,7 @@ from modtools.extensions.toon_snapshot.snapshot.DoodleSnapshot import DoodleSnap
 from modtools.extensions.toon_snapshot.snapshot.SuitSnapshot import SuitSnapshot
 
 from modtools.extensions.toon_snapshot.snapshot.RenderEnums import *
+from modtools.extensions.toon_snapshot.snapshot import SnapshotUtils
 
 
 toonSnapshot = ToonSnapshot(x, y, SNAPSHOT_HEADLESS)
@@ -54,9 +55,22 @@ import websockets
 
 # create handler for each connection
 async def handler(websocket, path):
+    # just putting this in here for now:
+    # cleanup old images (if applicable)
+    SnapshotUtils.clean_old_files()
+
     data = await websocket.recv()
     data = json.loads(data)
     outputData = dict()
+    if data.get("TEST"):
+        outputData["response"] = "pong"
+        await websocket.send(json.dumps(outputData))
+        return
+
+    # if data.get("QUERY"):
+    #     outputData["response"] = NameGenerator
+    #     await websocket.send(json.dumps(outputData))
+    #     return
 
     toonid = randint(0, 1000)  # should be sent with packet
     snapshot = id2snapshot[data.get("RENDER_TYPE")]
@@ -96,6 +110,7 @@ async def handler(websocket, path):
             customName = data.get("NAME"),
             customPhrase = data.get("CUSTOM_PHRASE"),
             chatBubbleType = bubbleType,
+            muzzleType = data.get("MUZZLE_TYPE")
         )
 
     elif data.get("RENDER_TYPE") == RenderType.Doodle:
