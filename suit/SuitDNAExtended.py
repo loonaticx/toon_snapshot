@@ -18,7 +18,7 @@ from toontown.suit.SuitDNA import moneyPolyColor, legalPolyColor, corpPolyColor,
     suitsPerDept, suitDeptFullnames, suitDeptFullnamesP, suitsPerLevel
 from toontown.toonbase import TTLocalizer
 
-from modtools.extensions.toon_snapshot.suit.SuitDNAEnums import *
+from modtools.extensions.toon_snapshot.suit.SuitEnums import *
 
 dept2PolyColor = {'c': corpPolyColor, 'l': legalPolyColor, 'm': moneyPolyColor, 's': salesPolyColor}
 
