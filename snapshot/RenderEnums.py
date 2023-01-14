@@ -1,3 +1,7 @@
+# to make it easier, we can reference the actor enums with importing RenderEnums
+from modtools.extensions.toon_snapshot.suit.SuitEnums import *
+from modtools.extensions.toon_snapshot.toon.ToonEnums import *
+
 from enum import IntEnum
 
 
