@@ -9,7 +9,7 @@ import random
 from modtools.extensions.toon_snapshot import SNAPSHOT_DEBUG
 from modtools.extensions.toon_snapshot.snapshot.RenderEnums import RenderType, ChatBubbleType, ChatFlag
 from modtools.extensions.toon_snapshot.snapshot.SnapshotBase import SnapshotBase
-from toontown.suit.SuitDNA import suitHeadTypes
+from toontown.suit.SuitDNAExtended import SuitHeadDict, HeadModelDict
 
 try:
     from panda3d.otp import CFSpeech, CFTimeout
@@ -17,30 +17,23 @@ except:
     CFSpeech = ChatBubbleType.Speech
     CFTimeout = ChatFlag.Timeout
 
+
 if __name__ == "__main__":
     from modtools.modbase import ModularStart
     from modtools.modbase.ModularBase import ModularBase
 
-    base = ModularBase(wantHotkeys = False)
+    base = ModularBase(wantHotkeys = True)
     base.initNametagGlobals()
 
 from toontown.suit import SuitDNAExtended, Suit, SuitDNA
 
 from direct.directnotify import DirectNotifyGlobal
-from modtools.extensions.toon_snapshot.snapshot.SnapshotExpressions import SuitExpressions
+from modtools.extensions.toon_snapshot.snapshot.SnapshotExpressions import SuitExpressions, BossExpressions
 
 
-class SuitSnapshot(SnapshotBase):
+class BossSnapshot(SnapshotBase):
     notify = DirectNotifyGlobal.directNotify.newCategory('SuitSnapshot')
     notify.showTime = 1
-
-    # TEMP DICT todo move somewhere else
-    boss2DeptDict = {
-        'vp': 's',
-        'cfo': 'm',
-        'cj': 'l',
-        'ceo': 'c',
-    }
 
     if SNAPSHOT_DEBUG:
         notify.setDebug(1)
@@ -64,48 +57,59 @@ class SuitSnapshot(SnapshotBase):
         """
         super().doSnapshot()
 
-    def loadSuit(self, haphazardDNA=False, headDNA=None, expressionID=1, randomExpression=True, wantNametag=True,
-                 suitName=None, bodyShot=True, customPhrase=None, chatBubbleType=ChatBubbleType.Normal):
+
+    def loadBoss(self, boss_type=None, haphazardDNA=False, expressionID=1, randomExpression=True, wantNametag=True,
+                 suitName=None, bodyShot=True, customPhrase=True, chatBubbleType=ChatBubbleType.Normal):
         # Don't load in a new Suit if one already exists right now
         if self.actor:
             return
 
-        self.actor = Suit.Suit()
+        from toontown.suit import BossCog
+        from toontown.suit import SuitDNA
 
-        if haphazardDNA:
-            self.generateHaphazardSuit()
+        self.actor = BossCog.BossCog()
+        self.actor.uniqueName = "daboss"
+        self.actorDNA = SuitDNA.SuitDNA()
+        if not boss_type:
+            self.actorDNA.newBossCog('s')
         else:
-            self.actorDNA = SuitDNA.SuitDNA()
-            # If the passed option is "Random", it  should fail the check.
-            if headDNA and headDNA in suitHeadTypes:
-                self.actorDNA.newSuit(headDNA)
-            else:
-                self.actorDNA.newSuitRandom()
-
-            self.actor.setDNA(self.actorDNA)
-            self.actor.dna = self.actorDNA
+            self.actorDNA.newBossCog(boss_type)
+        self.actor.dna = self.actorDNA  # Prevents crash w/ generateCorporateMedallion in BossCog generation
+        self.actor.setDNA(self.actorDNA)
 
         self.prepareActor(wantNametag)
 
         if suitName:
             self.actor.setName(suitName)
 
-        # small litle easter egg i guess, idk where else to put this lol
-        if headDNA in self.boss2DeptDict.keys():
-            self.generateBossHead(self.boss2DeptDict[headDNA])
+        randomCogName, randomCogHead = random.choice(list(SuitHeadDict.items()))
+        suitHeadType = randomCogHead[-1]
+        suitHeadModelPrefix = HeadModelDict[suitHeadType]
+        suitHead = loader.loadModel(f"phase_{suitHeadModelPrefix[1]}{suitHeadModelPrefix[0]}heads").find(f"**/{randomCogName}")
+        print(suitHead.getName())
+
+        # mdl = loader.loadModel("phase_6/models/golf/picnic_sandwich")
+        suitHead.setH(-90)
+        suitHead.setP(-90)
+        suitHead.setScale(3)
+        suitHead.setX(0.25)
+
+        suitHead.reparentTo(self.actor.neck.getParent())
+        self.actor.neck.hide()
+        self.actor.lookAt(self.camera)
+        # self.actor.request("neutral")
+        self.actor.doAnimate(None, raised = 1, happy = 1, queueNeutral = 1)
+
+        self.lookAtSuit('')
+
 
         # Use a certain expression set depending on the suit body type
-        expressionSet = SuitExpressions[self.actor.dna.body]
-        if randomExpression:
-            expressionID = random.randint(1, len(expressionSet.keys()))
-            self.notify.debug(f"expressionID: {expressionID}")
-        self.poseShot(
-            expressionSet.get(expressionID),
-            wantNametag,
-            bodyShot = bodyShot,
-            customPhrase = customPhrase,
-            chatBubbleType = chatBubbleType
-        )
+        # expressionSet = BossExpressions[self.actor.dna.body]
+        # if randomExpression:
+        #     expressionID = random.randint(1, len(expressionSet.keys()))
+        #     self.notify.debug(f"expressionID: {expressionID}")
+        # self.poseShot(expressionSet.get(expressionID), wantNametag, bodyShot = bodyShot, customPhrase=customPhrase, chatBubbleType = chatBubbleType)
+
 
     def generateHaphazardSuit(self, rmin=1, rmax=1000):
         random.seed(random.random())
@@ -116,6 +120,7 @@ class SuitSnapshot(SnapshotBase):
         battleInfo = suitInfo[SuitDNAExtended.SUIT_BATTLE_INFO]
         suitType = battleInfo['level']
 
+        self.actor = Suit.Suit()
         self.actorDNA = SuitDNAExtended.SuitDNAExtended()
         self.actorDNA.newSuitRandom(suitType, suitDept)
         self.actor.dna = self.actorDNA
@@ -123,45 +128,9 @@ class SuitSnapshot(SnapshotBase):
         self.actor.dna.name = suitName
         self.actor.setDNA_random(self.actorDNA)
 
-        # 10% chance that the head will be a random bosscog head
-        if random.random() <= 0.1:
-            self.generateBossHead(self.boss2DeptDict[random.choice(list(self.boss2DeptDict.keys()))])
-
-    def generateBossHead(self, bossName=None):
-        headRoot = self.actor.find("**/joint_head")
-        headRoot.getChildren().stash()
-
-        from toontown.suit import BossCog
-        from toontown.suit import SuitDNA
-
-        boss = BossCog.BossCog()
-        boss.uniqueName = "daboss"
-        bossDNA = SuitDNA.SuitDNA()
-        if not bossName:
-            bossName = 'm'
-        bossDNA.newBossCog(bossName)
-        boss.dna = bossDNA
-        boss.setDNA(bossDNA)
-        # boss.doAnimate(None, raised = 1, happy = 1, queueNeutral = 1)
-        boss.neck.reparentTo(headRoot)
-        boss.neck.setH(90)
-        # boss.neck.setP(-90)
-        boss.neck.setR(-90)
-        if bossName == 'c':
-            boss.neck.setScale(0.3)
-            boss.neck.setZ(-0.2)
-        elif bossName == 'l':
-            boss.neck.setScale(0.4)
-        elif bossName == 'm':
-            boss.neck.setScale(0.3)
-        else:
-            boss.neck.setScale(0.3)
-
-        # boss.neck.setX(0.25)
-
     def poseShot(self, expression, wantNametag, bodyShot, customPhrase, chatBubbleType):
         """
-        Image that contains the fullbody of the Suit.
+        Image that contains the fullbody of the Toon.
 
         :param dict expression: Refer to SnapshotExpressions
         """
@@ -195,6 +164,7 @@ class SuitSnapshot(SnapshotBase):
         # Configure custom dialog if any
         if customPhrase:
             self.actor.setChatAbsolute(customPhrase, chatBubbleType | CFTimeout)
+
 
     def lookAtSuit(self, lookAtTarget='head'):
         fillFactor = 0.6
@@ -238,7 +208,7 @@ class SuitSnapshot(SnapshotBase):
 
     def cleanup(self):
         """
-        Start over and clear the Suit information
+        Start over and clear the Toon information
         """
         super().cleanup()
 
@@ -247,10 +217,9 @@ if __name__ == "__main__":
     # X and Y should be the same res (1:1), else there will be weird aspect ratio issues.
     x = y = 1024
     headless = False
-    snapshot = SuitSnapshot(x, y, headless)
+    snapshot = BossSnapshot(x, y, headless)
 
-    base.accept('1', snapshot.loadSuit, extraArgs = [False, True])
-
+    base.accept('1', snapshot.loadBoss, extraArgs = [False, True])
     base.accept('2', snapshot.doSnapshot)
     base.accept('3', snapshot.cleanup)
     # snapshot.loadSuit(randomDNA=False, haphazardDNA = True)

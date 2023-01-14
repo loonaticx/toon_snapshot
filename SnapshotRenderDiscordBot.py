@@ -9,6 +9,7 @@ from discord import app_commands
 from discord.ext import commands
 
 from modtools.extensions.toon_snapshot import SnapshotRenderClient
+from toontown.pets.PetDNA import AllPetColors
 from toontown.toon import NPCToons
 
 from toontown.toonbase import TTLocalizerEnglish as localizer
@@ -23,6 +24,10 @@ import aiofiles
 import aiofiles.os
 
 import nest_asyncio
+
+from .pets.PetEnums import *
+from .snapshot.ExpressionEnums import DoodlePose
+from ..toon_controller.snapshot.SnapshotExpressions import DoodleExpressions
 
 nest_asyncio.apply()
 
@@ -47,8 +52,8 @@ class SnapshotRenderBot(commands.Bot):
 
     async def prepare_bot_tree(self):
         print(f"Preparing bot tree (guild = {MY_GUILD})")
-        # self.tree.clear_commands(guild = MY_GUILD)
-        self.tree.add_command(RenderGroup(bot), guild = MY_GUILD)
+        self.tree.clear_commands(guild = MY_GUILD)
+        self.tree.add_command(RenderGroup(self), guild = MY_GUILD)
 
         if MY_GUILD:
             # This copies the global commands over to your guild.
@@ -348,7 +353,7 @@ class RenderGroup(app_commands.Group):
             frame_type: Optional[FrameType] = FrameType.Bodyshot,
             eye_type: Optional[EyeType] = EyeType.NormalOpen,
             chatbubble_type: Optional[ChatBubbleType] = ChatBubbleType.Normal,
-            say: Optional[str] = None, muzzle_type: MuzzleType = None
+            say: Optional[str] = None, muzzle_type: MuzzleType = None, random_accessories: bool = False
     ):
         renderConfig = RenderSettings.RenderSettings().renderConfig
 
@@ -360,6 +365,7 @@ class RenderGroup(app_commands.Group):
         renderConfig["CHAT_BUBBLE_TYPE"] = chatbubble_type
         renderConfig["EYE_TYPE"] = eye_type
         renderConfig["MUZZLE_TYPE"] = muzzle_type
+        renderConfig["ACCESSORIES_RANDOM"] = random_accessories
 
         if not npc:
             renderConfig["RENDER_TYPE"] = RenderType.Toon
@@ -397,29 +403,75 @@ class RenderGroup(app_commands.Group):
         doodle_name = "Name of Doodle (default random)",
         nametag = "Display nametag? (defualt True)"
     )
+    # TOOD: move all customizable doodle dna params to another command, have it spit out a shorthand dna code to parse
     async def render_doodle(
             self, interaction: discord.Interaction,
-            random_dna: Optional[bool] = True,
+            random_dna: Optional[bool] = False,
+            pose: DoodlePose = DoodlePose.Random,
             say: Optional[str] = None, doodle_name: Optional[str] = None, nametag: Optional[bool] = True,
             chatbubble_type: Optional[ChatBubbleType] = ChatBubbleType.Normal,
+            head_type: HeadType = HeadType.Empty, ear_type:EarType = EarType.Empty,
+            nose_type: NoseType = NoseType.Empty, tail_type: TailType = TailType.Empty,
+            body_type: GenericBodyType = GenericBodyType.Dots, color_id: int = -1,  # todo make enum
+            # gender: PetGender = PetGender.Male
 
     ):
         renderConfig = RenderSettings.RenderSettings().renderConfig
 
         renderConfig["RENDER_TYPE"] = RenderType.Doodle
         # renderConfig["DNA_RANDOM"] = random_dna
+        if color_id == -1 or color_id >= len(AllPetColors):
+            color_id = random.randrange(0, len(AllPetColors))
+        renderConfig["DNA_STRING"] = [
+            head_type, ear_type, nose_type, tail_type, body_type, color_id, 0, 1, 0
+        ]
+        renderConfig["DNA_RANDOM"] = random_dna
+
         renderConfig["NAME"] = doodle_name
         renderConfig["WANT_NAMETAG"] = nametag
         renderConfig["CUSTOM_PHRASE"] = say
         renderConfig["CHAT_BUBBLE_TYPE"] = chatbubble_type
+        renderConfig["POSE_PRESET"] = pose
 
         file, embed = self.render_image(renderConfig)
         await interaction.response.send_message(file = file, embed = embed)
 
+
+    """
+    So, "Random" is technically an option that the user can choose. This is really just a null proxy option.
+    """
+    async def suitdna_autocomplete(self, interaction: discord.Interaction, current: str) \
+            -> List[app_commands.Choice[str]]:
+        return [
+            app_commands.Choice(name = "Random", value = f"{SuitDNAType.Random}"),
+            app_commands.Choice(name = "Haphazard", value = f"{SuitDNAType.Haphazard}"),
+        ]
+
+
+    # todo: clean this up later
+    suit_str2enum = {
+        f"{SuitDNAType.Random}": SuitDNAType.Random,
+        f"{SuitDNAType.Haphazard}": SuitDNAType.Haphazard,
+    }
+
+    suit_enum2str = {
+        SuitDNAType.Random: f"{SuitDNAType.Random}",
+        SuitDNAType.Haphazard: f"{SuitDNAType.Haphazard}",
+    }
+
     @app_commands.command(name = "suit")
+    @app_commands.describe(
+        dna = 'suitdna',
+        # npc = "Name of NPC to render",
+        # toon_name = "Name of Toon",
+        # nametag = "Display nametag?"
+    )
+    @app_commands.autocomplete(
+        dna = suitdna_autocomplete
+    )
     async def render_suit(
             self, interaction: discord.Interaction,
-            random_dna: SuitDNAType = SuitDNAType.Random,
+            dna: Optional[str] = suit_enum2str[SuitDNAType.Random],
             suit_name: Optional[str] = None, nametag: Optional[bool] = True,
             frame_type: Optional[FrameType] = FrameType.Bodyshot,
             chatbubble_type: Optional[ChatBubbleType] = ChatBubbleType.Normal,
@@ -427,8 +479,9 @@ class RenderGroup(app_commands.Group):
     ):
         renderConfig = RenderSettings.RenderSettings().renderConfig
         renderConfig["RENDER_TYPE"] = RenderType.Suit
-        renderConfig["DNA_RANDOM"] = random_dna == SuitDNAType.Random
-        renderConfig["DNA_HAPHAZARD"] = random_dna == SuitDNAType.Haphazard
+        # renderConfig["DNA_RANDOM"] = dna == self.suit_enum2str[SuitDNAType.Random]
+        renderConfig["DNA_HAPHAZARD"] = dna == self.suit_enum2str[SuitDNAType.Haphazard]
+        renderConfig["DNA_STRING"] = dna  # for now, this is wrt to suit head types
         renderConfig["WANT_NAMETAG"] = nametag
         renderConfig["CUSTOM_PHRASE"] = say
         renderConfig["FRAME_TYPE"] = frame_type
@@ -450,5 +503,103 @@ class RenderGroup(app_commands.Group):
         }
         return info
 
+
+class DoodleGroup(app_commands.Group):
+    """
+    Interactive Views for creating DNA to customize a character
+    """
+    def __init__(self, bot: discord.ext.commands.Bot):
+        super().__init__()
+        self.bot = bot
+        self.name = "create"
+
+    @app_commands.command(name = "doodle")
+    @app_commands.describe(
+        random_dna = 'unfinished',
+        say = "Make Doodle say input phrase",
+        doodle_name = "Name of Doodle (default random)",
+        nametag = "Display nametag? (defualt True)"
+    )
+    async def create_doodle(
+            self, interaction: discord.Interaction,
+            random_dna: Optional[bool] = True,
+            say: Optional[str] = None, doodle_name: Optional[str] = None, nametag: Optional[bool] = True,
+            chatbubble_type: Optional[ChatBubbleType] = ChatBubbleType.Normal,
+
+    ):
+        renderConfig = RenderSettings.RenderSettings().renderConfig
+
+        renderConfig["RENDER_TYPE"] = RenderType.Doodle
+        # renderConfig["DNA_RANDOM"] = random_dna
+        renderConfig["NAME"] = doodle_name
+        renderConfig["WANT_NAMETAG"] = nametag
+        renderConfig["CUSTOM_PHRASE"] = say
+        renderConfig["CHAT_BUBBLE_TYPE"] = chatbubble_type
+
+        file, embed = self.render_image(renderConfig)
+        await interaction.response.send_message(file = file, embed = embed)
+
+    @app_commands.command(name = "suit")
+    async def create_suit(
+            self, interaction: discord.Interaction,
+            random_dna: SuitDNAType = SuitDNAType.Random,
+            suit_name: Optional[str] = None, nametag: Optional[bool] = True,
+            frame_type: Optional[FrameType] = FrameType.Bodyshot,
+            chatbubble_type: Optional[ChatBubbleType] = ChatBubbleType.Normal,
+            say: Optional[str] = None
+    ):
+        renderConfig = RenderSettings.RenderSettings().renderConfig
+        renderConfig["RENDER_TYPE"] = RenderType.Suit
+        renderConfig["DNA_RANDOM"] = random_dna == SuitDNAType.Random
+        renderConfig["DNA_HAPHAZARD"] = random_dna == SuitDNAType.Haphazard
+        renderConfig["WANT_NAMETAG"] = nametag
+        renderConfig["CUSTOM_PHRASE"] = say
+        renderConfig["FRAME_TYPE"] = frame_type
+        renderConfig["NAME"] = suit_name
+        renderConfig["CHAT_BUBBLE_TYPE"] = chatbubble_type
+
+        file, embed = self.render_image(renderConfig)
+        await interaction.response.send_message(file = file, embed = embed)
+
+@bot.group(hidden=True)
+async def debug(ctx: commands.Context):
+    if str(ctx.author.id) != DISCORD_BOT_OWNER:
+        return
+    if ctx.invoked_subcommand is None:
+        await ctx.send('did not resync anything', delete_after=5)
+    else:
+        await ctx.send(f'resyncing bot (MY_GUILD = {MY_GUILD})', delete_after = 5)
+
+@debug.command()
+async def sync(ctx: commands.Context):
+    """What is this "secret" you speak of?"""
+    # bot.tree.clear_commands(guild = MY_GUILD)
+    bot.tree.add_command(RenderGroup(bot), guild = MY_GUILD)
+
+    if MY_GUILD:
+        # This copies the global commands over to your guild.
+        bot.tree.copy_global_to(guild = MY_GUILD)
+
+    await bot.tree.sync(guild = MY_GUILD)
+
+@debug.command()
+async def wipe(ctx: commands.Context):
+    bot.tree.clear_commands(guild = MY_GUILD)
+
+    if MY_GUILD:
+        # This copies the global commands over to your guild.
+        bot.tree.copy_global_to(guild = MY_GUILD)
+
+    await bot.tree.sync(guild = MY_GUILD)
+
+# bot.tree.clear_commands(guild = MY_GUILD)
+# bot.tree.add_command(RenderGroup(bot), guild = MY_GUILD)
+
+from .discord.DoodleGroup import CreateDoodleView
+
+@bot.tree.command()
+async def doodles(interaction: discord.Interaction):
+    view = CreateDoodleView(user = interaction.user)
+    await interaction.response.send_message(view = view)
 
 bot.run(DISCORD_TOKEN)

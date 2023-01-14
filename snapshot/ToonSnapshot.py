@@ -26,7 +26,8 @@ if __name__ == "__main__":
 
 from direct.directnotify import DirectNotifyGlobal
 from toontown.toon import Toon
-from toontown.toon import ToonDNA
+# from toontown.toon import ToonDNA
+from modtools.extensions.toon_snapshot.toon import ToonDNAExtended
 from toontown.toon import NPCToons
 from modtools.extensions.toon_snapshot.snapshot.SnapshotBase import SnapshotBase
 from modtools.extensions.toon_snapshot.snapshot.SnapshotExpressions import ToonExpressions
@@ -72,7 +73,7 @@ class ToonSnapshot(SnapshotBase):
 
     def loadToon(self, randomDNA=True, npcID=None, dnaString=None, accData=None, expressionID=1, randomExpression=True,
                  bodyShot=True, wantNametag=True, customName=None, customPhrase=None, speedchatPhrase=None,
-                 chatBubbleType=ChatBubbleType.Normal, muzzleType=None
+                 chatBubbleType=ChatBubbleType.Normal, muzzleType=None, randomAccessories=False
                  ):
         """
         Loads a specified Toon to be rendered out.
@@ -94,7 +95,7 @@ class ToonSnapshot(SnapshotBase):
             expressionID = random.choice(list(ToonExpressions.keys()))
 
         self.notify.info(f"{self.notify.getTime()}Loading Toon with properties: {(randomDNA, npcID, dnaString)}")
-        self.actorDNA = ToonDNA.ToonDNA()
+        self.actorDNA = ToonDNAExtended.ToonDNAExtended()
         self.actor = Toon.Toon()
 
         if customName:
@@ -104,6 +105,8 @@ class ToonSnapshot(SnapshotBase):
 
         if randomDNA:
             self.actorDNA.newToonRandom()
+            self.actorDNA.topTex, self.actorDNA.topTexColor, self.actorDNA.sleeveTex, self.actorDNA.sleeveTexColor = ToonDNAExtended.getRandomTop(self.actorDNA.gender)
+            self.actorDNA.botTex, self.actorDNA.botTexColor = ToonDNAExtended.getRandomBottom(self.actorDNA.gender)
         elif npcID:
             self.actor = NPCToons.createLocalNPC(npcID)
             dnaString = 1
@@ -114,7 +117,7 @@ class ToonSnapshot(SnapshotBase):
             # temp bc idk what to do here just yettt
             self.actor.setDNA(self.actorDNA)
 
-        self.loadAccessories(accData)
+        self.loadAccessories(accData, randomAccessories)
         self.prepareActor(wantNametag)
 
         # Tall toons are too tall for the window. If they fall under this, we'll shrink their scale down a bit.
@@ -142,13 +145,27 @@ class ToonSnapshot(SnapshotBase):
         # reapplyCheesyEffect
         # putOnSuit
 
-    def loadAccessories(self, accData):
+    def loadAccessories(self, accData, randomAccessories=False):
         """
         Since accessories aren't binded to ToonDNA, we need to set them manually
 
         :param list accData: [hat, hattex, aux, glasses, glassestex, aux, bp, bptex, aux, shoes, shoestex, shoestype]
                              aux = auxillary for potential future usage, should be 0 by default.
         """
+        if randomAccessories:
+            accData = []
+            for entry in random.choice(list(ToonDNAExtended.HatStyles.values())):
+                accData.append(entry)
+
+            for entry in random.choice(list(ToonDNAExtended.GlassesStyles.values())):
+                accData.append(entry)
+
+            for entry in random.choice(list(ToonDNAExtended.BackpackStyles.values())):
+                accData.append(entry)
+
+            for entry in random.choice(list(ToonDNAExtended.ShoesStyles.values())):
+                accData.append(entry)
+
         if accData is None:
             return
         ad = accData
@@ -204,9 +221,11 @@ class ToonSnapshot(SnapshotBase):
         :param str muzzleType: random, smile, sad, angry, laugh, shocked, normal
         """
         if muzzleType == MuzzleType.Random:
-            # Seems hacky, but it's just a shortcut.
-            muzzleType = random.randint(1, 6)
-        if muzzleType == MuzzleType.Random:
+            muzzleType = random.choice([
+                MuzzleType.Smile, MuzzleType.Shock, MuzzleType.Angry, MuzzleType.Laugh,
+                MuzzleType.Neutral, MuzzleType.Sad
+            ])
+        if muzzleType == MuzzleType.Smile:
             self.actor.showSmileMuzzle()
         elif muzzleType == MuzzleType.Sad:
             self.actor.showSadMuzzle()

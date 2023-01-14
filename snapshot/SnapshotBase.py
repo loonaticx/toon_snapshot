@@ -43,6 +43,7 @@ class SnapshotBase(OffscreenRenderBuffer):
         self.actorDNA = None  # type: AvatarDNA
         self.nameGenerator = None  # type: NameGenerator | PetNameGenerator
         self.type = RenderType.Random
+        self.extraInfo = dict()  # The server can grab this to see if we need to send additional info out to the user.
 
     def prepareActor(self, wantNametag):
         """

@@ -46,6 +46,8 @@ id2snapshot= {
 
 ###
 from toontown.toon import NPCToons
+from toontown.makeatoon.NameGenerator import NameGenerator
+
 
 ###
 
@@ -92,6 +94,8 @@ async def handler(websocket, path):
         else:
             bubbleType = ChatBubbleType.Thought
 
+    # await asyncio.sleep(0.5)
+
     if snapshot.type == RenderType.Toon:
         npcID = None
         randomDNA = data.get("DNA_RANDOM")
@@ -110,20 +114,27 @@ async def handler(websocket, path):
             customName = data.get("NAME"),
             customPhrase = data.get("CUSTOM_PHRASE"),
             chatBubbleType = bubbleType,
-            muzzleType = data.get("MUZZLE_TYPE")
+            muzzleType = data.get("MUZZLE_TYPE"),
+            randomAccessories = data.get("ACCESSORIES_RANDOM")
         )
 
     elif data.get("RENDER_TYPE") == RenderType.Doodle:
+        dna = data.get("DNA_RANDOM")
+        if not dna:
+            dna = data.get("DNA_STRING")
         snapshot.loadDoodle(
             doodleName = data.get("NAME"),
             customPhrase = data.get("CUSTOM_PHRASE"),
             wantNametag = data.get("WANT_NAMETAG"),
             chatBubbleType = bubbleType,
+            dna = dna,
+            expressionID = data.get("POSE_PRESET")
         )
     elif data.get("RENDER_TYPE") == RenderType.Suit:
         snapshot.loadSuit(
-            randomDNA = data.get("DNA_RANDOM"),
+            # randomDNA = data.get("DNA_RANDOM"),
             haphazardDNA = data.get("DNA_HAPHAZARD"),
+            headDNA = data.get("DNA_STRING"),
             wantNametag = data.get("WANT_NAMETAG"),
             suitName = data.get("NAME"),
             customPhrase = data.get("CUSTOM_PHRASE"),

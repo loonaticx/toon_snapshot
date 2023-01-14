@@ -90,3 +90,8 @@ SuitExpressions = {
         14: ["squirt-forward", 72, "c", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
     },
 }
+
+BossExpressions = {
+    1: ["neutral", 0, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+
+}

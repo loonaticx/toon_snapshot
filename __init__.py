@@ -33,6 +33,7 @@ SNAPSHOT_TRIM_WHITESPACE = ConfigVariableBool("snapshot-trim-whitespace", 1)
 
 DISCORD_TOKEN = ConfigVariableString("snapshot-discord-token", "unknown").getValue()
 DISCORD_GUILD = ConfigVariableString("snapshot-discord-guild", 'none').getValue()
+DISCORD_BOT_OWNER = ConfigVariableString("snapshot-discord-owner", '141314236998615040').getValue()
 
 # Graphics config
 loadPrcFileData("", "framebuffer-multisample 1")

@@ -1,6 +1,16 @@
 from enum import IntEnum
 
 
+class SuitDepartment(IntEnum):
+    """
+    WRT constants defined in SuitDNA
+    """
+    Bossbot = 0
+    Lawbot = 1
+    Cashbot = 2
+    Sellbot = 4
+
+
 class SuitDNADefinitions(IntEnum):
     SUIT_DEPT: int = 0
     SUIT_BODY: int = 1

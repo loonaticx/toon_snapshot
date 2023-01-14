@@ -26,4 +26,4 @@ snapshot-discord-token unknown
 
 # Change this if you want the bot to only work in a particular guild.
 # none means it'll run on any guild it's in.
-snapshot-discord-guild none
+snapshot-discord-guild 510448593476517897

@@ -53,16 +53,23 @@ class DoodleSnapshot(SnapshotBase):
         """
         super().doSnapshot()
 
-    def loadDoodle(self, randomDNA=True, expressionID=1, randomExpression=True, wantNametag=True,
+    def loadDoodle(self, dna=None, expressionID=0, wantNametag=True,
                    doodleName=None, customPhrase=False, chatBubbleType=ChatBubbleType.Normal):
+        """
+        Pet DNA is in the form of this:
+        [head, ears, nose, tail, body, color, colorScale, eyes, gender]
+        and are all integers -- can be enums if desired, though.
+        """
         # Don't load in a new Doodle if one already exists right now
         if self.actor:
             return
 
         self.actor = Pet.Pet()
 
-        if randomDNA:
+        if not dna:
             self.doodleDNA = PetDNA.getRandomPetDNA()
+        else:
+            self.doodleDNA = dna
         self.actor.setDNA(self.doodleDNA)
 
         self.prepareActor(wantNametag)
@@ -72,10 +79,14 @@ class DoodleSnapshot(SnapshotBase):
         else:
             self.actor.setName(self.nameGenerator.randomName())
 
-        if randomExpression:
+        if not expressionID:
             expressionID = random.randint(1, len(DoodleExpressions.keys()))
-        self.poseShot(DoodleExpressions.get(expressionID), wantNametag, customPhrase = customPhrase,
-                      chatBubbleType = chatBubbleType)
+        self.poseShot(
+            DoodleExpressions.get(expressionID),
+            wantNametag,
+            customPhrase = customPhrase,
+            chatBubbleType = chatBubbleType
+        )
 
         self.notify.debug(f"expression id = {expressionID}")
 
@@ -105,6 +116,7 @@ class DoodleSnapshot(SnapshotBase):
         if customPhrase:
             self.actor.nametag.setChat(customPhrase, chatBubbleType)
             # self.actor.setChatAbsolute(customPhrase, chatBubbleType | CFTimeout)
+
 
     def cleanup(self):
         """

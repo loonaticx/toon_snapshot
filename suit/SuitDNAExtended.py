@@ -467,7 +467,7 @@ HEAD_SIZE = 2
 
 SuitHeadDict = {
     'flunky': (('corporate-raider', None), (None,), 'c'),
-    'glasses': ((None,), (None,), 'c'),
+    # 'glasses': ((None,), (None,), 'c'),
     'pencilpusher': ((None,), (None,), 'b'),
     'yesman': (('robber-baron', None), (None,), 'a'),
     'micromanager': ((None,), (None,), 'c'),

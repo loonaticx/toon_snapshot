@@ -51,6 +51,16 @@ class RenderType(IntEnum):
 class SuitDNAType(IntEnum):
     Random = 0
     Haphazard = 1
-    Normal = 2
+    # Normal = 2
+
+
+class LanguageType(IntEnum):
+    Random = 0
+    English = 1
+    French = 2
+    German = 3
+    Japanese = 4
+    Castillan = 5
+    Portuguese = 6
 
 
