@@ -11,28 +11,6 @@ class ChatFlag(IntEnum):
     Timeout = 8  # CFTimeout, only here for accommodation
 
 
-class EyeType(IntEnum):
-    Random = 0
-    NormalOpen = 1
-    NormalClosed = 2
-    AngryOpen = 3
-    AngryClosed = 4
-    SadOpen = 5
-    SadClosed = 6
-    ShockOpen = 7
-    ShockClosed = 8
-
-
-class MuzzleType(IntEnum):
-    Random = 0
-    Neutral = 1
-    Angry = 2
-    Laugh = 3
-    Sad = 4
-    Shock = 5
-    Smile = 6
-
-
 class FrameType(IntEnum):
     Random = 0
     Headshot = 1
@@ -48,12 +26,6 @@ class RenderType(IntEnum):
     Suit = 4
 
 
-class SuitDNAType(IntEnum):
-    Random = 0
-    Haphazard = 1
-    # Normal = 2
-
-
 class LanguageType(IntEnum):
     Random = 0
     English = 1
@@ -62,5 +34,3 @@ class LanguageType(IntEnum):
     Japanese = 4
     Castillan = 5
     Portuguese = 6
-
-

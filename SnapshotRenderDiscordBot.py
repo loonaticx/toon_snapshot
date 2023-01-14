@@ -18,6 +18,9 @@ import random
 from toontown.toonbase.TTLocalizerEnglish import NPCToonNames
 from . import *
 from modtools.extensions.toon_snapshot.snapshot.RenderEnums import *
+from modtools.extensions.toon_snapshot.suit.SuitEnums import *
+from modtools.extensions.toon_snapshot.toon.ToonEnums import *
+
 from modtools.extensions.toon_snapshot.snapshot import RenderSettings
 
 import aiofiles

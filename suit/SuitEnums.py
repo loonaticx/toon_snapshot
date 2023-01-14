@@ -1,6 +1,12 @@
 from enum import IntEnum
 
 
+class SuitDNAType(IntEnum):
+    Random = 0
+    Haphazard = 1
+    # Normal = 2
+
+
 class SuitDepartment(IntEnum):
     """
     WRT constants defined in SuitDNA
