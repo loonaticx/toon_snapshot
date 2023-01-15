@@ -1,3 +1,7 @@
+from panda3d.core import loadPrcFileData
+
+from . import SNAPSHOT_HOST, SNAPSHOT_PORT, SNAPSHOT_RES, SNAPSHOT_EXTENSION, SNAPSHOT_HEADLESS, SNAPSHOT_DIR
+
 import json
 
 import os
@@ -8,10 +12,17 @@ from random import randint
 from modtools.modbase import ModularStart
 from modtools.modbase.ModularBase import ModularBase
 
-base = ModularBase()
+if SNAPSHOT_HEADLESS:
+    pipe = 'offscreen'
+else:
+    pipe = 'pandagl'
+
+# fun little hack to make sure headless can work :)
+loadPrcFileData('', 'inactivity-timeout 0')
+
+base = ModularBase(pipe = pipe)
 base.initCR()
 
-from . import SNAPSHOT_HOST, SNAPSHOT_PORT, SNAPSHOT_RES, SNAPSHOT_EXTENSION, SNAPSHOT_HEADLESS, SNAPSHOT_DIR
 
 x, y = [SNAPSHOT_RES] * 2
 
