@@ -1,7 +1,9 @@
 import sys, os
 
 # storing the directory in dir variable
-OP_DIR = os.path.dirname(__file__)
+from pathlib import Path
+
+OP_DIR = Path(os.path.dirname(__file__))
 sys.path.append(OP_DIR)
 
 if __name__ == '__main__':
@@ -39,6 +41,7 @@ DISCORD_BOT_OWNER = ConfigVariableString("snapshot-discord-owner", '141314236998
 loadPrcFileData("", "framebuffer-multisample 1")
 loadPrcFileData("", "multisamples 4")
 loadPrcFileData('', 'texture-anisotropic-degree %d' % 16)
+loadPrcFileData('', f'model-path {OP_DIR}')
 
 
 if __name__ == '__main__':
