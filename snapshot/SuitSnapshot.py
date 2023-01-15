@@ -9,7 +9,8 @@ import random
 from modtools.extensions.toon_snapshot import SNAPSHOT_DEBUG
 from modtools.extensions.toon_snapshot.snapshot.RenderEnums import RenderType, ChatBubbleType, ChatFlag
 from modtools.extensions.toon_snapshot.snapshot.SnapshotBase import SnapshotBase
-from toontown.suit.SuitDNA import suitHeadTypes
+from modtools.extensions.toon_snapshot.suit.SuitDNAExtended import suitHeadTypes
+from modtools.extensions.toon_snapshot.suit.SuitEnums import SuitFullName
 
 try:
     from panda3d.otp import CFSpeech, CFTimeout
@@ -24,7 +25,7 @@ if __name__ == "__main__":
     base = ModularBase(wantHotkeys = False)
     base.initNametagGlobals()
 
-from toontown.suit import SuitDNAExtended, Suit, SuitDNA
+from ..suit import SuitDNAExtended, SuitExtended
 
 from direct.directnotify import DirectNotifyGlobal
 from modtools.extensions.toon_snapshot.snapshot.SnapshotExpressions import SuitExpressions
@@ -70,13 +71,13 @@ class SuitSnapshot(SnapshotBase):
         if self.actor:
             return
 
-        self.actor = Suit.Suit()
+        self.actor = SuitExtended.SuitExtended()
 
         if haphazardDNA:
             self.generateHaphazardSuit()
         else:
-            self.actorDNA = SuitDNA.SuitDNA()
-            # If the passed option is "Random", it  should fail the check.
+            self.actorDNA = SuitDNAExtended.SuitDNAExtended()
+            # If the passed option is "Random", it should fail the check.
             if headDNA and headDNA in suitHeadTypes:
                 self.actorDNA.newSuit(headDNA)
             else:
@@ -112,16 +113,33 @@ class SuitSnapshot(SnapshotBase):
         suitId = random.randrange(rmin, rmax)
         suitName = f'random_{suitId}'
         suitInfo = SuitDNAExtended.getSuit(suitName)
-        suitDept = suitInfo[SuitDNAExtended.SUIT_DEPT]
+        # print(suitInfo)
+        suitDept = suitInfo[SuitDNAExtended.SUIT_DEPT_INDEX]
         battleInfo = suitInfo[SuitDNAExtended.SUIT_BATTLE_INFO]
         suitType = battleInfo['level']
 
         self.actorDNA = SuitDNAExtended.SuitDNAExtended()
-        self.actorDNA.newSuitRandom(suitType, suitDept)
+        self.actorDNA.newSuitRandom(suitType, suitDept, original=False)
         self.actor.dna = self.actorDNA
         self.actor.dna.dept = suitDept
         self.actor.dna.name = suitName
         self.actor.setDNA_random(self.actorDNA)
+
+        # print(suitInfo[SuitDNAExtended.SUIT_HEAD][0][0])
+
+        if suitInfo[SuitDNAExtended.SUIT_HEAD][0][0] == 'flunky':
+            self.actor.generateHead('glasses')
+
+        nerds = (
+            SuitFullName.CorporateRaider,
+            SuitFullName.Tightwad,
+        )
+        if random.random() <= 0.05 and suitInfo[SuitDNAExtended.SUIT_HEAD][0][0] in nerds:
+            self.actor.generateHead('glasses')
+
+
+        # hack :)
+        # print(dir(self.actor))
 
         # 10% chance that the head will be a random bosscog head
         if random.random() <= 0.1:
@@ -180,8 +198,8 @@ class SuitSnapshot(SnapshotBase):
         # todo: only apply if cog is like tbc
         extraY = 3
         # TODO: FINE TUNE ME LATER
-        if SuitDNAExtended.getSuitBodyType(self.actor.dna.name) == "c":
-            pass
+        # if SuitDNAExtended.getSuitBodyType(self.actor.dna.name) == "c":
+        #     pass
         lazyY = 8
         offsetY = 12 + (1 * wantNametag) + extraY + lazyY
         extraZ = -1.15

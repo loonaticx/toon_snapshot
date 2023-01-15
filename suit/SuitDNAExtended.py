@@ -8,19 +8,28 @@ import time
 
 from direct.distributed.PyDatagram import PyDatagram
 from direct.distributed.PyDatagramIterator import PyDatagramIterator
+from typing import Tuple, Dict
 
+from modtools.extensions.toon_snapshot import OP_DIR
 from toontown.suit import SuitDNA
 
 import random
 from panda3d.core import VBase4
 
-from toontown.suit.SuitDNA import moneyPolyColor, legalPolyColor, corpPolyColor, salesPolyColor, suitDepts, \
-    suitsPerDept, suitDeptFullnames, suitDeptFullnamesP, suitsPerLevel
+from toontown.suit.SuitDNA import moneyPolyColor, legalPolyColor, salesPolyColor, suitDepts, suitsPerDept, suitDeptFullnames, suitDeptFullnamesP, suitsPerLevel
 from toontown.toonbase import TTLocalizer
 
 from modtools.extensions.toon_snapshot.suit.SuitEnums import *
 
-dept2PolyColor = {'c': corpPolyColor, 'l': legalPolyColor, 'm': moneyPolyColor, 's': salesPolyColor}
+
+suitHeadTypes = [name.value for name in list(SuitName)]
+
+dept2PolyColor = {
+    SuitDepartment.Bossbot: SuitHandColor.Bossbot,
+    SuitDepartment.Lawbot: legalPolyColor,
+    SuitDepartment.Cashbot: moneyPolyColor,
+    SuitDepartment.Sellbot: salesPolyColor
+}
 
 Dept2Dept = {
     's': 'Sellbot',
@@ -37,14 +46,19 @@ Dept2NameDept = {
 CogDepts = ['c', 'l', 'm', 's']
 
 # Scale modifiers for different suit sizes
-SuitScaleModifiers = {'a': 6.06, 'b': 5.29, 'c': 4.14}
+SuitScaleModifiers = {SuitBodyType.SuitA: 6.06, SuitBodyType.SuitB: 5.29, SuitBodyType.SuitC: 4.14}
 
 # Suit definitions
-SUIT_DEPT = SuitDNADefinitions.SUIT_DEPT
+# its a pain in the ass rn to deal with this so, whatever.
+# SUIT_DEPT = SuitDepartment.value
+# SUIT_DEPT_ID = SuitDNADefinitions.SUIT_DEPT_ID
+SUIT_DEPT_INDEX = SuitDNADefinitions.SUIT_DEPT_INDEX
+
 SUIT_BODY = SuitDNADefinitions.SUIT_BODY
 SUIT_SCALE = SuitDNADefinitions.SUIT_SCALE
 SUIT_BODY_TEXTURES = SuitDNADefinitions.SUIT_BODY_TEXTURES
 SUIT_HAND_COLOR = SuitDNADefinitions.SUIT_HAND_COLOR
+SUIT_HAND_TEXTURE = SuitDNADefinitions.SUIT_HAND_TEXTURE
 SUIT_HEAD_COLOR = SuitDNADefinitions.SUIT_HEAD_COLOR
 SUIT_HEAD_TEXTURE = SuitDNADefinitions.SUIT_HEAD_TEXTURE
 SUIT_HEAD = SuitDNADefinitions.SUIT_HEAD
@@ -56,8 +70,24 @@ SUIT_LARGE = 1
 
 # Slightly modified variant of SuitAttributes from SuitBattleGlobals
 # Todo: remove attacks and acc entries since we don't need them for SuitSnapshot.
+"""
+SUIT_DEPT = SuitDNADefinitions.SUIT_DEPT
+SUIT_BODY = SuitDNADefinitions.SUIT_BODY
+SUIT_SCALE = SuitDNADefinitions.SUIT_SCALE
+SUIT_BODY_TEXTURES = SuitDNADefinitions.SUIT_BODY_TEXTURES
+SUIT_HAND_COLOR = SuitDNADefinitions.SUIT_HAND_COLOR
+SUIT_HEAD_COLOR = SuitDNADefinitions.SUIT_HEAD_COLOR
+SUIT_HEAD_TEXTURE = SuitDNADefinitions.SUIT_HEAD_TEXTURE
+SUIT_HEAD = SuitDNADefinitions.SUIT_HEAD
+SUIT_HEIGHT = SuitDNADefinitions.SUIT_HEIGHT
+SUIT_ANIM_EXCEPTIONS = SuitDNADefinitions.SUIT_ANIM_EXCEPTIONS
+SUIT_BATTLE_INFO = SuitDNADefinitions.SUIT_BATTLE_INFO
+"""
+
+# type: Dict[str, Tuple[SUIT_DEPT, SUIT_BODY, SUIT_SCALE, SUIT_BODY_TEXTURES, SUIT_HAND_COLOR, SUIT_HEAD_TEXTURE, SUIT_HEAD, SUIT_HEIGHT, SUIT_ANIM_EXCEPTIONS, dict[SUIT_BATTLE_INFO]]]
+
 SuitPresets = {
-    'f': ('c', 'c', 4.0, None, corpPolyColor, None, None, ('flunky', 'glasses'), 4.88, (1.0, True),
+    SuitName.Flunky: (SuitDepartment.Bossbot, SuitBodyType.SuitC, 4.0, None, SuitHandColor.Bossbot, None, None, ('flunky', 'glasses'), 4.88, (1.0, True),
           {
               'name': TTLocalizer.SuitFlunky,
               'singularname': TTLocalizer.SuitFlunkyS,
@@ -68,7 +98,7 @@ SuitPresets = {
                           ('Shred', (3, 4, 5, 6, 7), (50, 55, 60, 65, 70), (10, 15, 20, 25, 30)),
                           ('ClipOnTie', (1, 1, 2, 2, 3), (75, 80, 85, 90, 95), (60, 50, 40, 30, 20)))
           }),
-    'p': ('c', 'b', 3.35, None, corpPolyColor, None, None, ('pencilpusher',), 5.0, (0.0, False),
+    SuitName.PencilPusher: (SuitDepartment.Bossbot, SuitBodyType.SuitB, 3.35, None, SuitHandColor.Bossbot, None, None, ('pencilpusher',), 5.0, (0.0, False),
           {
               'name': TTLocalizer.SuitPencilPusher,
               'singularname': TTLocalizer.SuitPencilPusherS,
@@ -81,7 +111,7 @@ SuitPresets = {
                           ('WriteOff', (4, 6, 8, 10, 12), (75, 75, 75, 75, 75), (5, 10, 15, 20, 25)),
                           ('FillWithLead', (3, 4, 5, 6, 7), (75, 75, 75, 75, 75), (20, 20, 20, 20, 20)))
           }),
-    'ym': ('c', 'a', 4.125, None, corpPolyColor, None, None, ('yesman',), 5.28, (0.1, False),
+    SuitName.Yesman: (SuitDepartment.Bossbot, SuitBodyType.SuitA, 4.125, None, SuitHandColor.Bossbot, None, None, ('yesman',), 5.28, (0.1, False),
            {
                'name': TTLocalizer.SuitYesman,
                'singularname': TTLocalizer.SuitYesmanS,
@@ -93,7 +123,7 @@ SuitPresets = {
                            ('Synergy', (4, 5, 6, 7, 8), (50, 60, 70, 80, 90), (5, 10, 15, 20, 25)),
                            ('TeeOff', (3, 3, 4, 4, 5), (50, 60, 70, 80, 90), (35, 35, 35, 35, 35)))
            }),
-    'mm': ('c', 'c', 2.5, None, corpPolyColor, None, None, ('micromanager',), 3.25, (0.05, False),
+    SuitName.Micromanager: (SuitDepartment.Bossbot, SuitBodyType.SuitC, 2.5, None, SuitHandColor.Bossbot, None, None, ('micromanager',), 3.25, (0.05, False),
            {
                'name': TTLocalizer.SuitMicromanager,
                'singularname': TTLocalizer.SuitMicromanagerS,
@@ -106,7 +136,7 @@ SuitPresets = {
                            ('BrainStorm', (4, 6, 9, 12, 15), (5, 5, 5, 5, 5), (25, 25, 25, 25, 25)),
                            ('BuzzWord', (4, 6, 9, 12, 15), (50, 60, 70, 80, 90), (20, 20, 20, 20, 20)))
            }),
-    'ds': ('c', 'b', 4.5, None, corpPolyColor, None, None, ('beancounter',), 6.08, (0.41, True),
+    SuitName.Downsizer: (SuitDepartment.Bossbot, SuitBodyType.SuitB, 4.5, None, SuitHandColor.Bossbot, None, None, ('beancounter',), 6.08, (0.41, True),
            {
                'name': TTLocalizer.SuitDownsizer,
                'singularname': TTLocalizer.SuitDownsizerS,
@@ -118,7 +148,7 @@ SuitPresets = {
                            ('PinkSlip', (4, 5, 6, 7, 8), (60, 65, 75, 80, 85), (25, 25, 25, 25, 25)),
                            ('Sacked', (5, 6, 7, 8, 9), (50, 50, 50, 50, 50), (15, 15, 15, 15, 15)))
            }),
-    'hh': ('c', 'a', 6.5, None, corpPolyColor, None, None, ('headhunter',), 7.45, (0.8, True),
+    SuitName.HeadHunter: (SuitDepartment.Bossbot, SuitBodyType.SuitA, 6.5, None, SuitHandColor.Bossbot, None, None, ('headhunter',), 7.45, (0.8, True),
            {
                'name': TTLocalizer.SuitHeadHunter,
                'singularname': TTLocalizer.SuitHeadHunterS,
@@ -131,8 +161,8 @@ SuitPresets = {
                            ('HeadShrink', (10, 12, 15, 18, 21), (65, 75, 80, 85, 95), (35, 35, 35, 35, 35)),
                            ('Rolodex', (6, 7, 8, 9, 10), (60, 65, 70, 75, 80), (10, 10, 10, 10, 10)))
            }),
-    'cr': (
-        'c', 'c', 6.75, None, VBase4(0.85, 0.55, 0.55, 1.0), None, 'corporate-raider.png', ('flunky',), 8.23,
+    SuitName.CorporateRaider: (
+        SuitDepartment.Bossbot, SuitBodyType.SuitC, 6.75, None, VBase4(0.85, 0.55, 0.55, 1.0), None, 'corporate-raider.png', ('flunky',), 8.23,
         (2.1, True),
         {
             'name': TTLocalizer.SuitCorporateRaider,
@@ -145,7 +175,7 @@ SuitPresets = {
                         ('PlayHardball', (7, 8, 12, 15, 16), (60, 65, 70, 75, 80), (30, 30, 30, 30, 30)),
                         ('PowerTie', (10, 12, 14, 16, 18), (65, 75, 80, 85, 95), (15, 15, 15, 15, 15)))
         }),
-    'tbc': ('c', 'a', 7.0, None, VBase4(0.75, 0.95, 0.75, 1.0), None, None, ('bigcheese',), 9.34, (1.4, True),
+    SuitName.TheBigCheese: (SuitDepartment.Bossbot, SuitBodyType.SuitA, 7.0, None, VBase4(0.75, 0.95, 0.75, 1.0), None, None, ('bigcheese',), 9.34, (1.4, True),
             {
                 'name': TTLocalizer.SuitTheBigCheese,
                 'singularname': TTLocalizer.SuitTheBigCheeseS,
@@ -162,7 +192,7 @@ SuitPresets = {
                              (50, 50, 50, 50, 50, 50, 50, 50, 50)))
             }),
 
-    'bf': ('l', 'c', 4.0, None, legalPolyColor, None, 'bottom-feeder.png', ('tightwad',), 4.81, (1.0, True),
+    SuitName.BottomFeeder: (SuitDepartment.Lawbot, SuitBodyType.SuitC, 4.0, None, legalPolyColor, None, 'bottom-feeder.png', ('tightwad',), 4.81, (1.0, True),
            {
                'name': TTLocalizer.SuitBottomFeeder,
                'singularname': TTLocalizer.SuitBottomFeederS,
@@ -174,7 +204,20 @@ SuitPresets = {
                            ('Watercooler', (3, 4, 5, 6, 7), (95, 95, 95, 95, 95), (10, 10, 10, 10, 10)),
                            ('PickPocket', (1, 1, 2, 2, 3), (25, 30, 35, 40, 45), (50, 50, 50, 50, 50)))
            }),
-    'b': ('l', 'b', 4.375, None, VBase4(0.95, 0.95, 1.0, 1.0), None, 'blood-sucker.png', ('movershaker',), 6.17,
+    SuitName.StatueBottomFeeder: (
+        SpecialSuitDepartment.Statue, SuitBodyType.SuitC, 4.0, None, SuitHandColor.Default, None, f'img/textures/statue_bottom_feeder.png', (SuitFullName.StatueBottomFeeder,), 4.81, (1.0, True),
+        {
+            'name': "Bottom Feeder Statue",
+            'singularname': TTLocalizer.SuitBottomFeederS,
+            'pluralname': TTLocalizer.SuitBottomFeederP,
+            'level': 0,
+            'acc': (35, 40, 45, 50, 55),
+            'attacks': (('RubberStamp', (2, 3, 4, 5, 6), (75, 80, 85, 90, 95), (20, 20, 20, 20, 20)),
+                        ('Shred', (2, 4, 6, 8, 10), (50, 55, 60, 65, 70), (20, 20, 20, 20, 20)),
+                        ('Watercooler', (3, 4, 5, 6, 7), (95, 95, 95, 95, 95), (10, 10, 10, 10, 10)),
+                        ('PickPocket', (1, 1, 2, 2, 3), (25, 30, 35, 40, 45), (50, 50, 50, 50, 50)))
+        }),
+    'b': ('l', SuitBodyType.SuitB, 4.375, None, VBase4(0.95, 0.95, 1.0, 1.0), None, 'blood-sucker.png', ('movershaker',), 6.17,
           (0.41, False),
           {
               'name': TTLocalizer.SuitBloodsucker,
@@ -187,7 +230,7 @@ SuitPresets = {
                           ('Withdrawal', (6, 8, 10, 12, 14), (95, 95, 95, 95, 95), (10, 10, 10, 10, 10)),
                           ('Liquidate', (2, 3, 4, 6, 9), (50, 60, 70, 80, 90), (50, 50, 50, 50, 50)))
           }),
-    'dt': ('l', 'a', 4.25, None, legalPolyColor, None, 'double-talker.png', ('twoface',), 5.63, (0.31, False),
+    'dt': ('l', SuitBodyType.SuitA, 4.25, None, legalPolyColor, None, 'double-talker.png', ('twoface',), 5.63, (0.31, False),
            {
                'name': TTLocalizer.SuitDoubleTalker,
                'singularname': TTLocalizer.SuitDoubleTalkerS,
@@ -201,7 +244,7 @@ SuitPresets = {
                            ('Jargon', (3, 4, 6, 9, 12), (50, 60, 70, 80, 90), (25, 25, 25, 25, 25)),
                            ('MumboJumbo', (3, 4, 6, 9, 12), (50, 60, 70, 80, 90), (20, 20, 20, 20, 20)))
            }),
-    'ac': ('l', 'b', 4.35, None, legalPolyColor, None, None, ('ambulancechaser',), 6.39, (0.39, False),
+    'ac': ('l', SuitBodyType.SuitB, 4.35, None, legalPolyColor, None, None, ('ambulancechaser',), 6.39, (0.39, False),
            {
                'name': TTLocalizer.SuitAmbulanceChaser,
                'singularname': TTLocalizer.SuitAmbulanceChaserS,
@@ -213,7 +256,7 @@ SuitPresets = {
                            ('Rolodex', (3, 4, 5, 6, 7), (75, 75, 75, 75, 75), (20, 20, 20, 20, 20)),
                            ('HangUp', (2, 3, 4, 5, 6), (75, 75, 75, 75, 75), (35, 35, 35, 35, 35)))
            }),
-    'bs': ('l', 'a', 4.5, None, legalPolyColor, None, None, ('backstabber',), 6.71, (0.4, True),
+    'bs': ('l', SuitBodyType.SuitA, 4.5, None, legalPolyColor, None, None, ('backstabber',), 6.71, (0.4, True),
            {
                'name': TTLocalizer.SuitBackStabber,
                'singularname': TTLocalizer.SuitBackStabberS,
@@ -225,7 +268,7 @@ SuitPresets = {
                            ('FingerWag', (5, 6, 7, 8, 9), (50, 55, 65, 75, 80), (35, 35, 35, 35, 35)))
            }),
     'sd': (
-        'l', 'b', 5.65, None, VBase4(0.5, 0.8, 0.75, 1.0), None, 'spin-doctor.png', ('telemarketer',), 7.9,
+        'l', SuitBodyType.SuitB, 5.65, None, VBase4(0.5, 0.8, 0.75, 1.0), None, 'spin-doctor.png', ('telemarketer',), 7.9,
         (1.02, True),
         {
             'name': TTLocalizer.SuitSpinDoctor,
@@ -238,7 +281,7 @@ SuitPresets = {
                         ('Spin', (10, 12, 15, 18, 20), (70, 75, 80, 85, 90), (35, 35, 35, 35, 35)),
                         ('WriteOff', (6, 7, 8, 9, 10), (60, 65, 75, 85, 90), (15, 15, 15, 15, 15)))
         }),
-    'le': ('l', 'a', 7.125, None, VBase4(0.25, 0.25, 0.5, 1.0), None, None, ('legaleagle',), 8.27, (1.3, True),
+    'le': ('l', SuitBodyType.SuitA, 7.125, None, VBase4(0.25, 0.25, 0.5, 1.0), None, None, ('legaleagle',), 8.27, (1.3, True),
            {
                'name': TTLocalizer.SuitLegalEagle,
                'singularname': TTLocalizer.SuitLegalEagleS,
@@ -250,7 +293,7 @@ SuitPresets = {
                            ('Legalese', (11, 13, 16, 19, 21), (55, 65, 75, 85, 95), (35, 35, 35, 35, 35)),
                            ('PeckingOrder', (12, 15, 17, 19, 22), (70, 75, 80, 85, 95), (30, 30, 30, 30, 30)))
            }),
-    'bw': ('l', 'a', 7.0, None, legalPolyColor, None, None, ('bigwig',), 8.69, (1.4, True),
+    'bw': ('l', SuitBodyType.SuitA, 7.0, None, legalPolyColor, None, None, ('bigwig',), 8.69, (1.4, True),
            {
                'name': TTLocalizer.SuitBigWig,
                'singularname': TTLocalizer.SuitBigWigS,
@@ -263,7 +306,7 @@ SuitPresets = {
                             (50, 50, 50, 50, 50, 50, 50, 50, 50)))
            }),
 
-    'sc': ('m', 'c', 3.6, None, moneyPolyColor, None, None, ('coldcaller',), 4.77, (0.8, True),
+    'sc': ('m', SuitBodyType.SuitC, 3.6, None, moneyPolyColor, None, None, ('coldcaller',), 4.77, (0.8, True),
            {
                'name': TTLocalizer.SuitShortChange,
                'singularname': TTLocalizer.SuitShortChangeS,
@@ -275,7 +318,7 @@ SuitPresets = {
                            ('ClipOnTie', (1, 1, 2, 2, 3), (50, 50, 50, 50, 50), (25, 25, 25, 25, 25)),
                            ('PickPocket', (2, 2, 3, 4, 6), (95, 95, 95, 95, 95), (40, 40, 40, 40, 40)))
            }),
-    'pp': ('m', 'a', 3.55, None, VBase4(1.0, 0.5, 0.6, 1.0), None, None, ('pennypincher',), 5.26, (0.04, False),
+    'pp': ('m', SuitBodyType.SuitA, 3.55, None, VBase4(1.0, 0.5, 0.6, 1.0), None, None, ('pennypincher',), 5.26, (0.04, False),
            {
                'name': TTLocalizer.SuitPennyPincher,
                'singularname': TTLocalizer.SuitPennyPincherS,
@@ -286,7 +329,7 @@ SuitPresets = {
                            ('FreezeAssets', (2, 3, 4, 6, 9), (75, 75, 75, 75, 75), (20, 20, 20, 20, 20)),
                            ('FingerWag', (1, 2, 3, 4, 6), (50, 50, 50, 50, 50), (35, 35, 35, 35, 35)))
            }),
-    'tw': ('m', 'c', 4.5, None, moneyPolyColor, None, None, ('tightwad',), 5.41, (1.3, False),
+    'tw': ('m', SuitBodyType.SuitC, 4.5, None, moneyPolyColor, None, None, ('tightwad',), 5.41, (1.3, False),
            {
                'name': TTLocalizer.SuitTightwad,
                'singularname': TTLocalizer.SuitTightwadS,
@@ -299,7 +342,7 @@ SuitPresets = {
                            ('FreezeAssets', (3, 4, 6, 9, 12), (75, 75, 75, 75, 75), (5, 5, 65, 5, 30)),
                            ('BounceCheck', (5, 6, 9, 13, 18), (75, 75, 75, 75, 75), (5, 5, 5, 60, 30)))
            }),
-    'bc': ('m', 'b', 4.4, None, moneyPolyColor, None, None, ('beancounter',), 5.95, (0.36, False),
+    'bc': ('m', SuitBodyType.SuitB, 4.4, None, moneyPolyColor, None, None, ('beancounter',), 5.95, (0.36, False),
            {
                'name': TTLocalizer.SuitBeanCounter,
                'singularname': TTLocalizer.SuitBeanCounterS,
@@ -311,7 +354,7 @@ SuitPresets = {
                            ('Tabulate', (4, 6, 9, 12, 15), (75, 75, 75, 75, 75), (25, 25, 25, 25, 25)),
                            ('WriteOff', (4, 6, 9, 12, 15), (95, 95, 95, 95, 95), (30, 30, 30, 30, 30)))
            }),
-    'nc': ('m', 'a', 5.25, None, moneyPolyColor, None, None, ('numbercruncher',), 7.22, (0.6, True),
+    'nc': ('m', SuitBodyType.SuitA, 5.25, None, moneyPolyColor, None, None, ('numbercruncher',), 7.22, (0.6, True),
            {
                'name': TTLocalizer.SuitNumberCruncher,
                'singularname': TTLocalizer.SuitNumberCruncherS,
@@ -323,7 +366,7 @@ SuitPresets = {
                            ('Crunch', (8, 9, 11, 13, 15), (60, 65, 75, 80, 85), (35, 35, 35, 35, 35)),
                            ('Tabulate', (5, 6, 7, 8, 9), (50, 50, 50, 50, 50), (20, 20, 20, 20, 20)))
            }),
-    'mb': ('m', 'c', 5.3, None, moneyPolyColor, None, None, ('moneybags',), 6.97, (1.85, True),
+    'mb': ('m', SuitBodyType.SuitC, 5.3, None, moneyPolyColor, None, None, ('moneybags',), 6.97, (1.85, True),
            {
                'name': TTLocalizer.SuitMoneyBags,
                'singularname': TTLocalizer.SuitMoneyBagsS,
@@ -334,7 +377,7 @@ SuitPresets = {
                            ('MarketCrash', (8, 10, 12, 14, 16), (60, 65, 70, 75, 80), (45, 45, 45, 45, 45)),
                            ('PowerTie', (6, 7, 8, 9, 10), (60, 65, 75, 85, 90), (25, 25, 25, 25, 25)))
            }),
-    'ls': ('m', 'b', 6.5, None, VBase4(0.5, 0.85, 0.75, 1.0), None, None, ('loanshark',), 8.58, (1.4, True),
+    'ls': ('m', SuitBodyType.SuitB, 6.5, None, VBase4(0.5, 0.85, 0.75, 1.0), None, None, ('loanshark',), 8.58, (1.4, True),
            {
                'name': TTLocalizer.SuitLoanShark,
                'singularname': TTLocalizer.SuitLoanSharkS,
@@ -346,7 +389,7 @@ SuitPresets = {
                            ('PlayHardball', (9, 11, 12, 13, 15), (55, 65, 75, 85, 95), (20, 20, 20, 20, 20)),
                            ('WriteOff', (6, 8, 10, 12, 14), (70, 75, 80, 85, 95), (15, 15, 15, 15, 15)))
            }),
-    'rb': ('m', 'a', 7.0, None, moneyPolyColor, None, 'robber-baron.png', ('yesman',), 8.95, (1.6, True),
+    'rb': ('m', SuitBodyType.SuitA, 7.0, None, moneyPolyColor, None, 'robber-baron.png', ('yesman',), 8.95, (1.6, True),
            {
                'name': TTLocalizer.SuitRobberBaron,
                'singularname': TTLocalizer.SuitRobberBaronS,
@@ -359,7 +402,7 @@ SuitPresets = {
                             (50, 50, 50, 50, 50, 50, 50, 50, 50)))
            }),
 
-    'cc': ('s', 'c', 3.5, None, VBase4(0.55, 0.65, 1.0, 1.0), VBase4(0.25, 0.35, 1.0, 1.0), None, ('coldcaller',), 4.63,
+    'cc': ('s', SuitBodyType.SuitC, 3.5, None, VBase4(0.55, 0.65, 1.0, 1.0), SuitHeadColor.ColdCaller, None, ('coldcaller',), 4.63,
            (0.7, True),
            {
                'name': TTLocalizer.SuitColdCaller,
@@ -372,7 +415,7 @@ SuitPresets = {
                            ('DoubleTalk', (2, 3, 4, 6, 8), (50, 55, 60, 65, 70), (25, 25, 25, 25, 25)),
                            ('HotAir', (3, 4, 6, 8, 10), (50, 50, 50, 50, 50), (45, 40, 35, 30, 25)))
            }),
-    'tm': ('s', 'b', 3.75, None, salesPolyColor, None, None, ('telemarketer',), 5.24, (0.07, False),
+    'tm': ('s', SuitBodyType.SuitB, 3.75, None, salesPolyColor, None, None, ('telemarketer',), 5.24, (0.07, False),
            {
                'name': TTLocalizer.SuitTelemarketer,
                'singularname': TTLocalizer.SuitTelemarketerS,
@@ -384,7 +427,7 @@ SuitPresets = {
                            ('Rolodex', (4, 6, 7, 9, 12), (50, 50, 50, 50, 50), (30, 30, 30, 30, 30)),
                            ('DoubleTalk', (4, 6, 7, 9, 12), (75, 80, 85, 90, 95), (40, 40, 40, 40, 40)))
            }),
-    'nd': ('s', 'a', 4.35, None, salesPolyColor, None, 'name-dropper.png', ('numbercruncher',), 5.98, (0.07, False),
+    'nd': ('s', SuitBodyType.SuitA, 4.35, None, salesPolyColor, None, 'name-dropper.png', ('numbercruncher',), 5.98, (0.07, False),
            {
                'name': TTLocalizer.SuitNameDropper,
                'singularname': TTLocalizer.SuitNameDropperS,
@@ -396,7 +439,7 @@ SuitPresets = {
                            ('Synergy', (3, 4, 6, 9, 12), (50, 50, 50, 50, 50), (15, 15, 15, 15, 15)),
                            ('PickPocket', (2, 2, 2, 2, 2), (95, 95, 95, 95, 95), (15, 15, 15, 15, 15)))
            }),
-    'gh': ('s', 'c', 4.75, None, salesPolyColor, None, None, ('gladhander',), 5.98, (1.4, True),
+    'gh': ('s', SuitBodyType.SuitC, 4.75, None, salesPolyColor, None, None, ('gladhander',), 5.98, (1.4, True),
            {
                'name': TTLocalizer.SuitGladHander,
                'singularname': TTLocalizer.SuitGladHanderS,
@@ -408,7 +451,7 @@ SuitPresets = {
                            ('Filibuster', (4, 6, 9, 12, 15), (30, 40, 50, 60, 70), (10, 20, 30, 40, 45)),
                            ('Schmooze', (5, 7, 11, 15, 20), (55, 65, 75, 85, 95), (10, 20, 30, 40, 45)))
            }),
-    'ms': ('s', 'b', 4.75, None, salesPolyColor, None, None, ('movershaker',), 6.7, (0.7, True),
+    'ms': ('s', SuitBodyType.SuitB, 4.75, None, salesPolyColor, None, None, ('movershaker',), 6.7, (0.7, True),
            {
                'name': TTLocalizer.SuitMoverShaker,
                'singularname': TTLocalizer.SuitMoverShakerS,
@@ -421,7 +464,7 @@ SuitPresets = {
                            ('Shake', (6, 8, 10, 12, 14), (70, 75, 80, 85, 90), (25, 25, 25, 25, 25)),
                            ('Tremor', (5, 6, 7, 8, 9), (50, 50, 50, 50, 50), (20, 20, 20, 20, 20)))
            }),
-    'tf': ('s', 'a', 5.25, None, salesPolyColor, None, None, ('twoface',), 6.95, (0.75, True),
+    'tf': ('s', SuitBodyType.SuitA, 5.25, None, salesPolyColor, None, None, ('twoface',), 6.95, (0.75, True),
            {
                'name': TTLocalizer.SuitTwoFace,
                'singularname': TTLocalizer.SuitTwoFaceS,
@@ -433,7 +476,7 @@ SuitPresets = {
                            ('RazzleDazzle', (8, 10, 12, 14, 16), (60, 65, 70, 75, 80), (30, 30, 30, 30, 30)),
                            ('RedTape', (6, 7, 8, 9, 10), (60, 65, 75, 85, 90), (25, 25, 25, 25, 25)))
            }),
-    'm': ('s', 'a', 5.75, None, salesPolyColor, None, 'mingler.png', ('twoface',), 7.61, (0.9, True),
+    'm': ('s', SuitBodyType.SuitA, 5.75, None, salesPolyColor, None, 'mingler.png', ('twoface',), 7.61, (0.9, True),
           {
               'name': TTLocalizer.SuitTheMingler,
               'singularname': TTLocalizer.SuitTheMinglerS,
@@ -446,7 +489,7 @@ SuitPresets = {
                           ('Schmooze', (7, 8, 12, 15, 16), (55, 65, 75, 85, 95), (30, 30, 30, 30, 30)),
                           ('TeeOff', (8, 9, 10, 11, 12), (70, 75, 80, 85, 95), (10, 10, 10, 10, 10)))
           }),
-    'mh': ('s', 'a', 7.0, None, salesPolyColor, None, None, ('yesman',), 8.95, (1.3, True),
+    'mh': ('s', SuitBodyType.SuitA, 7.0, None, salesPolyColor, None, None, ('yesman',), 8.95, (1.3, True),
            {
                'name': TTLocalizer.SuitMrHollywood,
                'singularname': TTLocalizer.SuitMrHollywoodS,
@@ -465,16 +508,22 @@ HEAD_TEXTURES = 0
 HEAD_COLORS = 1
 HEAD_SIZE = 2
 
+"""
+head: headInfo=([HEAD_TEXTURES], [HEAD_COLORS], HEAD_SIZE)
+"""
 SuitHeadDict = {
-    'flunky': (('corporate-raider', None), (None,), 'c'),
+    # disable statue man for now
+    # SuitFullName.StatueBottomFeeder: (("statue_bottom_feeder", None), (None,), 'c'),
+
+    SuitFullName.Flunky: (('corporate-raider', None), (None,), 'c', 'glasses'),
     # 'glasses': ((None,), (None,), 'c'),
-    'pencilpusher': ((None,), (None,), 'b'),
-    'yesman': (('robber-baron', None), (None,), 'a'),
-    'micromanager': ((None,), (None,), 'c'),
+    SuitFullName.PencilPusher: ((None,), (None,), 'b'),
+    SuitFullName.Yesman: (('robber-baron', None), (None,), 'a'),
+    SuitFullName.Micromanager: ((None,), (None,), 'c'),
     'beancounter': ((None,), (None,), 'b'),
     'headhunter': ((None,), (None,), 'a'),
     'bigcheese': ((None,), (None,), 'a'),
-    'tightwad': (('bottom-feeder', None), (None,), 'c'),
+    'tightwad': (('bottom-feeder',  None), (None,), 'c'),
     'movershaker': (('blood-sucker', None), (None,), 'b'),
     'twoface': (('double-talker', 'mingler', None), (None,), 'a'),
     'ambulancechaser': ((None,), (None,), 'b'),
@@ -482,29 +531,30 @@ SuitHeadDict = {
     'telemarketer': (('spin-doctor', None), (None,), 'b'),
     'legaleagle': ((None,), (None,), 'a'),
     'bigwig': ((None,), (None,), 'a'),
-    'coldcaller': ((None,), (VBase4(0.25, 0.35, 1.0, 1.0), None), 'c'),
+    'coldcaller': ((None,), (SuitHeadColor.ColdCaller, None), 'c'),
     'pennypincher': ((None,), (None,), 'a'),
     'numbercruncher': (('name-dropper', None), (None,), 'a'),
     'moneybags': ((None,), (None,), 'c'),
     'loanshark': ((None,), (None,), 'b'),
-    'gladhander': ((None,), (None,), 'c')
+    'gladhander': ((None,), (None,), 'c'),
+
 }
 
 HeadModelDict = {
-    'a': ('/models/char/suitA-', 4),
-    'b': ('/models/char/suitB-', 4),
-    'c': ('/models/char/suitC-', 3.5)
+    SuitBodyType.SuitA: ('/models/char/suitA-', 4),
+    SuitBodyType.SuitB: ('/models/char/suitB-', 4),
+    SuitBodyType.SuitC: ('/models/char/suitC-', 3.5)
 }
 
 RandomSuitPrefixes = (
     "Flunky", "Pencil", "Yes", "Micro", "Down", "Head", "Corporate", "The Big", "Bottom", "Blood", "Double",
     "Ambulance", "Back", "Spin", "Legal", "Big", "Short", "Penny", "Tight", "Bean", "Number", "Money", "Loan", "Robber",
-    "Cold", "Tele", "Name", "Glad", "Mover &", "Two", "The", "Mr."
+    "Cold", "Tele", "Name", "Glad", "Mover &", "Two", "The", "Mr.", "Cog"
 )
 RandomSuitSuffixes = (
     "Flunky", "Pusher", "Man", "Manager", "Sizer", "Hunter", "Raider", "Cheese", "Feeder", "Sucker", "Talker", "Chaser",
     "Stabber", "Doctor", "Eagle", "Wig", "Change", "Pincher", "Wad", "Counter", "Cruncher", "Bags", "Shark", "Baron",
-    "Caller", "Marketer", "Dropper", "Hander", "Shaker", "Face", "Mingler", "Hollywood"
+    "Caller", "Marketer", "Dropper", "Hander", "Shaker", "Face", "Mingler", "Hollywood", "Cog"
 )
 
 AttacksSuitA = (
@@ -616,11 +666,11 @@ body2Attacks = {'a': AttacksSuitA, 'b': AttacksSuitB, 'c': AttacksSuitC}
 
 def generateRandomSuit(seed, stability=0.95):
     # Seed the suit
-    random.seed(seed * time.time())
+    random.seed()
 
     # Determine a department and body size
-    department = random.choice(CogDepts)
-    body = random.choice(('a', 'b', 'c'))
+    department = random.choice(list(SuitDepartment))
+    body = random.choice((list(SuitBodyType)))
     size = round(random.uniform(2, 8), 1)
 
     suitTextures = None
@@ -631,8 +681,12 @@ def generateRandomSuit(seed, stability=0.95):
     else:
         handColor = dept2PolyColor.get(department)
 
+    glasses = None
     head = random.choice(list(SuitHeadDict.keys()))
     headInfo = SuitHeadDict[head]
+    # cogHead = tuple(head)
+    # if headInfo[-1] == 'glasses':
+    #     cogHead.append('glasses')
     filePrefix, phase = HeadModelDict[headInfo[HEAD_SIZE]]
     headPath = 'phase_' + str(phase) + filePrefix + 'heads'
     headModel = ((head, headPath),)
@@ -767,9 +821,12 @@ def getSuitBodyType(name):
     return suitBody
 
 
-def getSuitDept(name):
+def getSuitDept(name: str):
+    """
+    :returns: the suit's department name as a string
+    """
     suitInfo = getSuit(name)
-    suitDept = suitInfo[SUIT_DEPT]
+    suitDept = suitInfo[SUIT_DEPT_INDEX]
     return suitDept
 
 
@@ -841,7 +898,10 @@ class SuitDNAExtended(SuitDNA.SuitDNA):
             self.dept = getSuitDept(self.name)
             self.body = getSuitBodyType(self.name)
 
-    def newSuitRandom(self, level=None, dept=None):
+    def newSuitRandom(self, level=None, dept=None, original=True):
+        if original:
+            super().newSuitRandom(level, dept)
+            return
         self.type = 's'
         if level == None:
             level = random.choice(range(1, len(suitsPerLevel)))
