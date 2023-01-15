@@ -3,3 +3,5 @@ websockets
 json
 aiofiles
 nest_asyncio
+strenum
+pathlib
