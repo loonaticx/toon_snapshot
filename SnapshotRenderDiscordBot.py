@@ -28,7 +28,7 @@ import nest_asyncio
 
 from .pets.PetEnums import *
 from .snapshot.ExpressionEnums import DoodlePose
-from ..toon_controller.snapshot.SnapshotExpressions import DoodleExpressions
+from ..toon_snapshot.snapshot.SnapshotExpressions import DoodleExpressions
 
 nest_asyncio.apply()
 
