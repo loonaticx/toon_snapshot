@@ -54,6 +54,10 @@ discord.errors.LoginFailure: Improper token has been passed.
 Make sure you don't have any quotations around your discord token and/or guild id.
 
 
+## Configuring Service
+``cp -r etc /etc``
+
+
 # Ignore below
 
 ```commandline
