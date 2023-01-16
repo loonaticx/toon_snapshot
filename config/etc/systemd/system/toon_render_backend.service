@@ -1,0 +1,10 @@
+[Unit]
+Description=Backend Render Service for ToonSnapshotBot
+After=network.target
+[Service]
+ExecStart=/usr/bin/python3 ./SnapshotRenderServer.py
+WorkingDirectory=/root/discord_bots/toon_render/toontown/modtools/extensions/toon_snapshot/
+Restart=yes
+User=root
+[Install]
+WantedBy=multi-user.target
