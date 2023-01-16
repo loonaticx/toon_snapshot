@@ -1,9 +1,9 @@
 import sys, os
 
 # storing the directory in dir variable
-from pathlib import Path
+# from pathlib import Path
 
-OP_DIR = Path(os.path.dirname(__file__))
+OP_DIR = os.path.abspath(os.path.join(__file__))
 sys.path.append(OP_DIR)
 
 if __name__ == '__main__':
