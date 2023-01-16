@@ -2,8 +2,8 @@
 Description=Discord Bot Service for ToonSnapshotBot
 After=network.target
 [Service]
-ExecStart=/usr/bin/python3 ./SnapshotRenderDiscordBot.py
-WorkingDirectory=/root/discord_bots/toon_render/toontown/modtools/extensions/toon_snapshot/
+ExecStart=/usr/bin/python3 -m toontown.modtools.extensions.toon_snapshot.SnapshotRenderDiscordBot
+WorkingDirectory=/root/discord_bots/toon_render/toontown/
 Restart=yes
 User=root
 [Install]
