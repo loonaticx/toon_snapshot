@@ -1,12 +1,20 @@
 # ToonSnapshotBot
+*Powered by the [modtools](https://github.com/loonaticx/modtools) library!*
 
 # Installation
-
 This library serves as an *extension* module of the modtools library. Keep in mind that this is currently only supported in sources using Python 3+.
 
+While the bot can be configured to run on other Toontown sources, the development of the bot has been based off [this](https://github.com/loonaticx/open-toontown/tree/custom/custom) custom fork of open-toontown.
+
+If you're unsure where to install the bot, feel free to clone the fork with:
+```commandline
+git clone https://github.com/loonaticx/open-toontown --branch custom/custom
+cd open-toontown
+```
+---
 First, clone the base ``modtools`` into the root of your Toontown source:
 ```commandline
-git clone --branch barebones https://github.com/toontownretro/modtools
+git clone https://github.com/loonaticx/modtools
 ```
 
 By the end, your file structure should look similar to something like:
@@ -21,6 +29,10 @@ By the end, your file structure should look similar to something like:
     - resources
     ...
 ```
+
+## Configuring Services
+### Linux
+``cp -r etc /etc``
 
 ## Debugging
 Of course, it's not going to be pretty straightforward for a module like this to work on *any* Toontown source.
@@ -54,8 +66,7 @@ discord.errors.LoginFailure: Improper token has been passed.
 Make sure you don't have any quotations around your discord token and/or guild id.
 
 
-## Configuring Service
-``cp -r etc /etc``
+
 
 
 # Ignore below
