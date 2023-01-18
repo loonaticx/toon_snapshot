@@ -73,7 +73,7 @@ class SnapshotRenderBot(commands.Bot):
         response = json.loads(SnapshotRenderClient.response)
 
         pfp_path = response["RENDER_IMAGE"]
-        fp = open(pfp_path, 'rb')
+        fp = open(os.path.abspath(pfp_path), 'rb')
         self.pfp = fp.read()
         return self.pfp
 
