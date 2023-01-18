@@ -36,9 +36,9 @@ class NameGeneratorExtended(NameGenerator):
 
         currentLine = input.readline()
         while currentLine:
-            if currentLine.lstrip()[0:1] != b'#':
-                a1 = currentLine.find(b'*')
-                a2 = currentLine.find(b'*', a1 + 1)
+            if currentLine.lstrip()[0:1] != bytes('#'):
+                a1 = currentLine.find(bytes('*'))
+                a2 = currentLine.find(bytes('*'), a1 + 1)
                 self.nameDictionary[int(currentLine[0:a1])] = (
                     int(currentLine[a1 + 1:a2]), currentLine[a2 + 1:].rstrip().decode('utf-8'))
 
