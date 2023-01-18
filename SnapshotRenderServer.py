@@ -1,6 +1,7 @@
 from panda3d.core import loadPrcFileData
 
-from . import SNAPSHOT_HOST, SNAPSHOT_PORT, SNAPSHOT_RES, SNAPSHOT_EXTENSION, SNAPSHOT_HEADLESS, SNAPSHOT_DIR
+from . import SNAPSHOT_HOST, SNAPSHOT_PORT, SNAPSHOT_RES, SNAPSHOT_EXTENSION, SNAPSHOT_HEADLESS, SNAPSHOT_DIR, \
+    SNAPSHOT_TRIM_WHITESPACE
 
 import json
 
@@ -164,8 +165,9 @@ async def handler(websocket, path):
     outputData["RENDER_IMAGE"] = snapshot.filename
     outputData["ACTOR_NAME"] = name_temp
 
-    imgMagickPath = os.environ.get("IMAGEMAGICK_PATH") + "\\" if os.environ.get("IMAGEMAGICK_PATH") else ""
-    subprocess.call([f"{imgMagickPath}convert.exe", reply, '-trim', reply])
+    if SNAPSHOT_TRIM_WHITESPACE:
+        imgMagickPath = os.environ.get("IMAGEMAGICK_PATH") + "\\" if os.environ.get("IMAGEMAGICK_PATH") else ""
+        subprocess.call([f"{imgMagickPath}convert.exe", reply, '-trim', reply])
     await websocket.send(json.dumps(outputData))
 
 
