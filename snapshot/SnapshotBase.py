@@ -90,8 +90,8 @@ class SnapshotBase(OffscreenRenderBuffer):
         """
         Start over and clear the Actor information
         """
-        camera.setHpr(0, 0, 0)
-        camera.setPos(0, 0, 0)
+        self.camera.setHpr(0, 0, 0)
+        self.camera.setPos(0, 0, 0)
         if hasattr(self.actor, 'delete'):
             self.actor.delete()
         if hasattr(self.actor, 'cleanup'):

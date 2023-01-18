@@ -289,11 +289,11 @@ class ToonSnapshot(SnapshotBase):
             c, height = calcBodyBounds()
 
         # Move camera there
-        camera.setHpr(self.render, 0, 0, 0)
-        camera.setPos(self.render, c)
+        self.camera.setHpr(self.render, 0, 0, 0)
+        self.camera.setPos(self.render, c)
         # Move it back to fit around the target
         offset = ((height / 2.0) / tan(deg2Rad((fillFactor * effectiveFOV) / 2.0)))
-        camera.setY(camera, -offset)
+        self.camera.setY(self.camera, -offset)
 
     def cleanup(self):
         """
