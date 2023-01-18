@@ -9,7 +9,7 @@ import random
 from modtools.extensions.toon_snapshot import SNAPSHOT_DEBUG
 from modtools.extensions.toon_snapshot.snapshot.RenderEnums import RenderType, ChatBubbleType, ChatFlag
 from modtools.extensions.toon_snapshot.snapshot.SnapshotBase import SnapshotBase
-from toontown.suit.SuitDNAExtended import SuitHeadDict, HeadModelDict
+from ..suit.SuitDNAExtended import SuitHeadDict, HeadModelDict
 
 try:
     from panda3d.otp import CFSpeech, CFTimeout
@@ -25,7 +25,8 @@ if __name__ == "__main__":
     base = ModularBase(wantHotkeys = True)
     base.initNametagGlobals()
 
-from toontown.suit import SuitDNAExtended, Suit, SuitDNA
+from ..suit import SuitDNAExtended
+from toontown.suit import Suit, SuitDNA
 
 from direct.directnotify import DirectNotifyGlobal
 from modtools.extensions.toon_snapshot.snapshot.SnapshotExpressions import SuitExpressions, BossExpressions
