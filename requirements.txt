@@ -2,5 +2,5 @@ discord.py
 websockets
 aiofiles
 nest_asyncio
-strenum
+StrEnum
 pathlib
