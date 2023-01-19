@@ -4,7 +4,7 @@ import sys, os
 from pathlib import PurePath
 
 OP_DIR = PurePath(os.path.dirname(__file__))
-sys.path.append(OP_DIR)
+#sys.path.append(OP_DIR)
 
 if __name__ == '__main__':
     from modtools.modbase import ModularStart
