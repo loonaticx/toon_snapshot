@@ -2,9 +2,6 @@ import os
 
 from .. import SNAPSHOT_DIR, SNAPSHOT_KEEP_RENDERS, SNAPSHOT_CLEANUP_TIME, SNAPSHOT_PREFIX
 
-from wand.image import Image
-from wand.color import Color
-
 
 # housekeeper script
 def clean_old_files():
@@ -20,8 +17,10 @@ def clean_old_files():
 
 
 def trim_whitespace(image_path):
+    from wand.image import Image
+    from wand.color import Color
+
     with Image(filename = image_path) as img:
         img.trim(color = Color('rgba(0,0,0,0)'), fuzz = 0)
     img.save(filename = os.path.abspath(image_path))
     img.close()
-
