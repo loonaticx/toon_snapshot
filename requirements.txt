@@ -4,3 +4,4 @@ aiofiles
 nest_asyncio
 StrEnum
 pathlib
+Wand

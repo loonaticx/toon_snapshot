@@ -166,8 +166,10 @@ async def handler(websocket, path):
     outputData["ACTOR_NAME"] = name_temp
 
     if SNAPSHOT_TRIM_WHITESPACE:
-        imgMagickPath = os.environ.get("IMAGEMAGICK_PATH") + "\\" if os.environ.get("IMAGEMAGICK_PATH") else ""
-        subprocess.call([f"{imgMagickPath}convert.exe", reply, '-trim', reply])
+        # Todo: Make trim whitespace script instead of depending on imagemagick
+        SnapshotUtils.trim_whitespace(snapshot.filename)
+        # imgMagickPath = os.environ.get("IMAGEMAGICK_PATH") + "\\" if os.environ.get("IMAGEMAGICK_PATH") else ""
+        # subprocess.call([f"{imgMagickPath}convert.exe", reply, '-trim', reply])
     await websocket.send(json.dumps(outputData))
 
 

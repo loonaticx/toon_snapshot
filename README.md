@@ -30,8 +30,12 @@ By the end, your file structure should look similar to something like:
     ...
 ```
 
-## Configuring Services
-### Linux
+## Running Headless
+In order to run the service on a virtual server, you will need to install some extra tools:
+```bash
+sudo apt-get install xvfb xserver-xephyr libmagickwand-dev -y
+```
+
 ``cp -r etc /etc``
 
 ## Debugging
