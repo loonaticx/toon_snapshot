@@ -32,9 +32,9 @@ class PetNameGeneratorExtended(PetNameGenerator.PetNameGenerator):
 
         currentLine = input.readline()
         while currentLine:
-            if currentLine.lstrip()[0:1] != bytes('#'):
-                a1 = currentLine.find(bytes('*'))
-                a2 = currentLine.find(bytes('*'), a1 + 1)
+            if currentLine.lstrip()[0:1] != bytes('#', 'utf-8'):
+                a1 = currentLine.find(bytes('*', 'utf-8'))
+                a2 = currentLine.find(bytes('*', 'utf-8'), a1 + 1)
                 self.nameDictionary[int(currentLine[0:a1])] = (
                     int(currentLine[a1 + 1:a2]), currentLine[a2 + 1:len(currentLine) - 1].strip()
                 )
