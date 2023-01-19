@@ -167,9 +167,13 @@ async def handler(websocket, path):
 
     if SNAPSHOT_TRIM_WHITESPACE:
         # Todo: Make trim whitespace script instead of depending on imagemagick
-        SnapshotUtils.trim_whitespace(snapshot.filename)
-        # imgMagickPath = os.environ.get("IMAGEMAGICK_PATH") + "\\" if os.environ.get("IMAGEMAGICK_PATH") else ""
-        # subprocess.call([f"{imgMagickPath}convert.exe", reply, '-trim', reply])
+        # hack bc i dont feel like setting up the magickwand library right now on windows
+        # https://docs.wand-py.org/en/latest/guide/install.html#install-imagemagick-on-windows
+        if os.name != 'nt':
+            SnapshotUtils.trim_whitespace(snapshot.filename)
+        else:
+            imgMagickPath = os.environ.get("IMAGEMAGICK_PATH") + "\\" if os.environ.get("IMAGEMAGICK_PATH") else ""
+            subprocess.call([f"{imgMagickPath}convert.exe", reply, '-trim', reply])
     await websocket.send(json.dumps(outputData))
 
 
