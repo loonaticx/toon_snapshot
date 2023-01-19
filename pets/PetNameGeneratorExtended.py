@@ -4,7 +4,7 @@ from toontown.pets import PetNameGenerator
 from toontown.toonbase import TTLocalizer
 
 
-class PetNameGeneratorExtended(PetNameGenerator):
+class PetNameGeneratorExtended(PetNameGenerator.PetNameGenerator):
     def __init__(self):
         self.generateLists()
 

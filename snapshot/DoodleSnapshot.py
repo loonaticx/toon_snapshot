@@ -22,7 +22,7 @@ from toontown.pets import PetDNA, Pet
 
 from direct.directnotify import DirectNotifyGlobal
 from modtools.extensions.toon_snapshot.snapshot.SnapshotExpressions import DoodleExpressions
-from toontown.pets.PetNameGenerator import PetNameGenerator
+from ..pets.PetNameGeneratorExtended import PetNameGeneratorExtended as PetNameGenerator
 from modtools.extensions.toon_snapshot.snapshot.SnapshotBase import SnapshotBase
 
 
