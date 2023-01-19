@@ -23,4 +23,4 @@ def trim_whitespace(image_path):
     with Image(filename = image_path) as img:
         img.trim(color = Color('rgba(0,0,0,0)'), fuzz = 0)
     img.save(filename = os.path.abspath(image_path))
-    img.close()
+    # img.close()
