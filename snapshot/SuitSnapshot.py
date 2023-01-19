@@ -137,10 +137,6 @@ class SuitSnapshot(SnapshotBase):
         if random.random() <= 0.05 and suitInfo[SuitDNAExtended.SUIT_HEAD][0][0] in nerds:
             self.actor.generateHead('glasses')
 
-
-        # hack :)
-        # print(dir(self.actor))
-
         # 10% chance that the head will be a random bosscog head
         if random.random() <= 0.1:
             self.generateBossHead(self.boss2DeptDict[random.choice(list(self.boss2DeptDict.keys()))])
