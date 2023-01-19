@@ -88,7 +88,7 @@ async def handler(websocket, path):
 
     toonid = randint(0, 1000)  # should be sent with packet
     snapshot = id2snapshot[data.get("RENDER_TYPE")]
-    snapshot.filename = os.path.abspath(f"{SNAPSHOT_DIR}/{toonid}{SNAPSHOT_EXTENSION}")
+    snapshot.filename = f"{SNAPSHOT_DIR}/{toonid}{SNAPSHOT_EXTENSION}"
 
     if data.get("FRAME_TYPE") == FrameType.Random:
         # flip a coin
