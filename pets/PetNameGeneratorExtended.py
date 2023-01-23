@@ -1,4 +1,5 @@
 from panda3d.core import Filename, DSearchPath, StreamReader
+import random
 
 from toontown.pets import PetNameGenerator
 from toontown.toonbase import TTLocalizer
@@ -44,3 +45,21 @@ class PetNameGeneratorExtended(PetNameGenerator.PetNameGenerator):
         for tu in self.nameDictionary.values():
             masterList[tu[0]].append(tu[1])
         return 1
+
+    def randomName(self, gender = None, seed = None):
+        S = random.getstate()
+        if seed is not None:
+            random.seed(seed)
+        if gender is None:
+            gender = random.choice([0, 1])
+        retString = ''
+        firstList = self.neutralFirsts[:]
+        if gender == 0:
+            firstList += self.boyFirsts
+        elif gender == 1:
+            firstList += self.girlFirsts
+        else:
+            self.error('Must be boy or girl.')
+        retString += random.choice(firstList).decode('utf-8')
+        random.setstate(S)
+        return retString
