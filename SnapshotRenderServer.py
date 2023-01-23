@@ -12,6 +12,7 @@ from random import randint
 
 from modtools.modbase import ModularStart
 from modtools.modbase.ModularBase import ModularBase
+from .snapshot.SnapshotUtils import crop_images
 
 if SNAPSHOT_HEADLESS:
     pipe = 'offscreen'
@@ -166,14 +167,15 @@ async def handler(websocket, path):
     outputData["ACTOR_NAME"] = name_temp
 
     if SNAPSHOT_TRIM_WHITESPACE:
+        await crop_images(reply)
         # Todo: Make trim whitespace script instead of depending on imagemagick
         # hack bc i dont feel like setting up the magickwand library right now on windows
         # https://docs.wand-py.org/en/latest/guide/install.html#install-imagemagick-on-windows
-        if os.name != 'nt':
-            SnapshotUtils.trim_whitespace(snapshot.filename)
-        else:
-            imgMagickPath = os.environ.get("IMAGEMAGICK_PATH") + "\\" if os.environ.get("IMAGEMAGICK_PATH") else ""
-            subprocess.call([f"{imgMagickPath}convert.exe", reply, '-trim', reply])
+        # if os.name != 'nt':
+        #     SnapshotUtils.trim_whitespace(snapshot.filename)
+        # else:
+        #     imgMagickPath = os.environ.get("IMAGEMAGICK_PATH") + "\\" if os.environ.get("IMAGEMAGICK_PATH") else ""
+        #     subprocess.call([f"{imgMagickPath}convert.exe", reply, '-trim', reply])
     await websocket.send(json.dumps(outputData))
 
 

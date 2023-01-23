@@ -1,6 +1,7 @@
 import os
+import subprocess
 
-from .. import SNAPSHOT_DIR, SNAPSHOT_KEEP_RENDERS, SNAPSHOT_CLEANUP_TIME, SNAPSHOT_PREFIX
+from .. import SNAPSHOT_DIR, SNAPSHOT_KEEP_RENDERS, SNAPSHOT_CLEANUP_TIME, SNAPSHOT_PREFIX, SNAPSHOT_IMAGEMAGICK_PATH
 
 
 # housekeeper script
@@ -16,7 +17,14 @@ def clean_old_files():
                 os.remove(filePath)
 
 
+async def crop_images(image_path):
+    return subprocess.call([SNAPSHOT_IMAGEMAGICK_PATH, image_path, '-trim', image_path])
+
+
 def trim_whitespace(image_path):
+    """
+    todo: deal with this later
+    """
     from wand.image import Image
     from wand.color import Color
 
