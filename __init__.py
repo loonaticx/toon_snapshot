@@ -32,7 +32,9 @@ SNAPSHOT_PREFIX = ConfigVariableString("snapshot-prefix", "render_").getValue()
 SNAPSHOT_KEEP_RENDERS = ConfigVariableBool("snapshot-keep-renders", 0)
 SNAPSHOT_CLEANUP_TIME = ConfigVariableBool("snapshot-cleanup-time", 60)
 SNAPSHOT_TRIM_WHITESPACE = ConfigVariableBool("snapshot-trim-whitespace", 1)
+SNAPSHOT_IMAGEMAGICK_PATH = ConfigVariableString("snapshot-imagemagick-path", os.environ.get("IMAGEMAGICK_PATH")).getValue()
 
+# Discord Config
 DISCORD_TOKEN = ConfigVariableString("snapshot-discord-token", "unknown").getValue()
 DISCORD_GUILD = ConfigVariableString("snapshot-discord-guild", 'none').getValue()
 DISCORD_BOT_OWNER = ConfigVariableString("snapshot-discord-owner", '141314236998615040').getValue()
