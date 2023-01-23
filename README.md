@@ -30,10 +30,18 @@ By the end, your file structure should look similar to something like:
     ...
 ```
 
-## Running Headless
+## Installing Prerequisites
+
+### Headless
 In order to run the service on a virtual server, you will need to install some extra tools:
 ```bash
-sudo apt-get install xvfb xserver-xephyr libmagickwand-dev -y
+sudo apt-get install xvfb xserver-xephyr -y
+```
+
+### Cropping
+On Linux installs:
+```bash
+sudo apt install imagemagick -y
 ```
 
 ``cp -r etc /etc``
