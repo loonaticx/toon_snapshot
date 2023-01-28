@@ -69,6 +69,14 @@ DoodleExpressions = {
 SuitExpressions = {
     'a': {
         1: ["neutral", 0, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        2: ["walk", 13, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        3: ["drop-react", 22, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        4: ["drop-react", 46, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        5: ["flail", 21, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        6: ["flatten", 114, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        7: ["hypnotized", 16, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        8: ["landing", 13, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+
     },
     'b': {
         1: ["neutral", 0, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
