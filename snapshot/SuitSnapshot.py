@@ -100,6 +100,9 @@ class SuitSnapshot(SnapshotBase):
         if randomExpression:
             expressionID = random.randint(1, len(expressionSet.keys()))
             self.notify.debug(f"expressionID: {expressionID}")
+
+        self.actor.expression_id = expressionID
+
         self.poseShot(
             expressionSet.get(expressionID),
             wantNametag,

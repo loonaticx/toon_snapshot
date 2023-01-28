@@ -62,6 +62,8 @@ class SnapshotBase(OffscreenRenderBuffer):
         # Not really needed, but just in case we want to do any fancy calls:
         self.actor.doId = -1
 
+        self.actor.expression_id = -1
+
         # Should we display the nametag?
         if wantNametag:
             self.actor.nametag.manage(base.marginManager)
@@ -84,9 +86,14 @@ class SnapshotBase(OffscreenRenderBuffer):
     def getInfo(self):
         return [
             self.actor.getName(),
-            self.actor.getCurrentAnim(),
+            self.getExpressionID(),
             self.actor.getCurrentFrame(),
         ]
+
+    def getExpressionID(self):
+        if hasattr(self.actor, 'expression_id'):
+            return self.actor.expression_id
+        return -1
 
     def cleanup(self):
         """
