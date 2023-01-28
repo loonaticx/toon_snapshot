@@ -77,7 +77,24 @@ SuitExpressions = {
         7: ["hypnotized", 16, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
         8: ["landing", 13, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
         9: ["lose", 129, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
-
+        10: ["magic3", 21, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        11: ["magic3", 70, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        12: ["pie-small", 19, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        13: ["pie-small", 6, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        14: ["rake-react", 22, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        15: ["reach", 59, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        16: ["rubber-stamp", 82, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        17: ["sidestep-left", 11, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        18: ["sidestep-left", 44, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        19: ["sidestep-right", 16, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        20: ["slip-backward", 1, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        21: ["slip-backward", 28, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        22: ["slip-backward", 39, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        23: ["slip-forward", 9, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        24: ["slip-forward", 13, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        25: ["slip-forward", 44, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        26: ["slip-forward", 71, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        27: ["slip-forward", 70, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
     },
     'b': {
         1: ["neutral", 0, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
