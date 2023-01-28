@@ -76,6 +76,7 @@ SuitExpressions = {
         6: ["flatten", 114, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
         7: ["hypnotized", 16, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
         8: ["landing", 13, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        9: ["lose", 29, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
 
     },
     'b': {
