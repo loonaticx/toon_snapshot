@@ -70,19 +70,19 @@ SuitExpressions = {
     'a': {
         1: ["neutral", 0, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
         2: ["walk", 13, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
-        3: ["anvil-drop", 22, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
-        4: ["anvil-drop", 46, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
-        5: ["flailing", 21, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
-        6: ["drop", 114, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
-        7: ["hypnotize", 16, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        3: ["drop-react", 22, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        4: ["drop-react", 46, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        5: ["flail", 21, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        6: ["flatten", 114, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        7: ["hypnotized", 16, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
         8: ["landing", 13, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
-        9: ["lose", 129, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        9: ["lose", 129, "default", "default", (0, -4, 0), (0, 0, 0), (1, 1, 1)],  # Default
         10: ["magic3", 21, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
         11: ["magic3", 70, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
-        12: ["pie-small", 19, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
-        13: ["pie-small", 6, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
-        14: ["rake", 22, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
-        15: ["walknreach", 59, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        12: ["pie-small-react", 19, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        13: ["pie-small-react", 6, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        14: ["rake-react", 22, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        15: ["reach", 59, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
         16: ["rubber-stamp", 82, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
         17: ["sidestep-left", 11, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
         18: ["sidestep-left", 44, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
@@ -101,17 +101,17 @@ SuitExpressions = {
     },
     'c': {
         1: ["neutral", 0, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
-        2: ["flailing", 31, "c", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
-        3: ["rake", 55, "c", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        2: ["flail", 31, "c", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        3: ["rake-react", 55, "c", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
         4: ["soak", 61, "c", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
         5: ["soak", 65, "c", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
         6: ["throw-paper", 67, "c", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
-        7: ["anvil-drop", 43, "c", "default", (0, 2, -1), (0, 0, 0), (1, 1, 1)],  # Default
+        7: ["drop-react", 43, "c", "default", (0, 2, -1), (0, 0, 0), (1, 1, 1)],  # Default
         8: ["slip-forward", 13, "c", "default", (0, 2, -1), (0, 0, 0), (1, 1, 1)],  # Default
         9: ["slip-backward", 59, "c", "default", (0, 2, -1), (0, 0, 0), (1, 1, 1)],  # Default
         10: ["victory", 28, "c", "default", (0, 2, -1), (0, 0, 0), (1, 1, 1)],  # Default
-        11: ["rake", 59, "c", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
-        12: ["squirt-small", 25, "c", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        11: ["rake-react", 59, "c", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        12: ["squirt-small-react", 25, "c", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
         13: ["slip-forward", 48, "c", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
         14: ["slip-forward", 72, "c", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
     },
