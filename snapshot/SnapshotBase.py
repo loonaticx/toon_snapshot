@@ -84,7 +84,8 @@ class SnapshotBase(OffscreenRenderBuffer):
     def getInfo(self):
         return [
             self.actor.getName(),
-            self.actor.getActorInfo(),
+            self.actor.getCurrentAnim(),
+            self.actor.getCurrentFrame(),
         ]
 
     def cleanup(self):

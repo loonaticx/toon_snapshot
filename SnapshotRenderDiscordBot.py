@@ -312,9 +312,12 @@ class RenderGroup(app_commands.Group):
         image_path_nodir = response["RENDER_IMAGE"].replace(f"{SNAPSHOT_DIR}/", "")
         image = discord.File(response["RENDER_IMAGE"])
         # async with aiofiles.open(SnapshotRenderClient.response, 'rb') as f:
-        desc = "cog"
+        desc = ""
         if SNAPSHOT_DEBUG:
-            desc = response["ACTOR_INFO"]
+            desc += "**__Debug Info__**\n"
+            anim_name = response["ACTOR_ANIM_NAME"]
+            anim_frame = response["ACTOR_ANIM_FRAME"]
+            desc += f"Animation Name: {anim_name} @ Frame: {anim_frame}"
         em = discord.Embed(
             title = response["ACTOR_NAME"],
             description = desc,

@@ -160,12 +160,13 @@ async def handler(websocket, path):
         snapshot.loadDoodle()
 
     snapshot.doSnapshot()
-    name_temp, info_temp = snapshot.getInfo()
+    name, anim, frame = snapshot.getInfo()
     snapshot.cleanup()
     reply = snapshot.filename
     outputData["RENDER_IMAGE"] = snapshot.filename
-    outputData["ACTOR_NAME"] = name_temp
-    outputData["ACTOR_INFO"] = info_temp
+    outputData["ACTOR_NAME"] = name
+    outputData["ACTOR_ANIM_NAME"] = anim
+    outputData["ACTOR_ANIM_FRAME"] = frame
 
     if SNAPSHOT_TRIM_WHITESPACE:
         await crop_images(reply)
