@@ -312,9 +312,12 @@ class RenderGroup(app_commands.Group):
         image_path_nodir = response["RENDER_IMAGE"].replace(f"{SNAPSHOT_DIR}/", "")
         image = discord.File(response["RENDER_IMAGE"])
         # async with aiofiles.open(SnapshotRenderClient.response, 'rb') as f:
+        desc = "cog"
+        if SNAPSHOT_DEBUG:
+            desc = response["ACTOR_INFO"]
         em = discord.Embed(
             title = response["ACTOR_NAME"],
-            description = f"Description",
+            description = desc,
             color = discord.Color.from_str("#49F147"),
         )
         em.set_image(url = f"attachment://{image_path_nodir}")
