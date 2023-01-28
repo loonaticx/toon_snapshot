@@ -82,7 +82,7 @@ SuitExpressions = {
         12: ["pie-small", 19, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
         13: ["pie-small", 6, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
         14: ["rake", 22, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
-        15: ["reach", 59, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
+        15: ["walknreach", 59, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
         16: ["rubber-stamp", 82, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
         17: ["sidestep-left", 11, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
         18: ["sidestep-left", 44, "default", "default", (0, 0, 0), (0, 0, 0), (1, 1, 1)],  # Default
