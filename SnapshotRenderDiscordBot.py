@@ -10,6 +10,7 @@ from discord.ext import commands
 
 from modtools.extensions.toon_snapshot import SnapshotRenderClient
 from toontown.pets.PetDNA import AllPetColors
+# todo: dont call npctoons here for other source compatibility
 from toontown.toon import NPCToons
 
 from toontown.toonbase import TTLocalizerEnglish as localizer
@@ -38,7 +39,7 @@ if guild.isdigit():
 else:
     MY_GUILD = None
 
-# Since the NPC Toon dict is unfathomably large, let's pregenerate a lookup dict.
+# Since the NPC Toon dict is unfathomably large, let's pre-generate a lookup dict.
 NpcToonNames_name2id = {
     toonName.lower().replace(" ", "").replace(".", ""): toonID for toonID, toonName in NPCToonNames.items()
 }
@@ -472,9 +473,6 @@ class RenderGroup(app_commands.Group):
     @app_commands.command(name = "suit")
     @app_commands.describe(
         dna = 'suitdna',
-        # npc = "Name of NPC to render",
-        # toon_name = "Name of Toon",
-        # nametag = "Display nametag?"
     )
     @app_commands.autocomplete(
         dna = suitdna_autocomplete
@@ -582,7 +580,6 @@ async def debug(ctx: commands.Context):
 
 @debug.command()
 async def sync(ctx: commands.Context):
-    """What is this "secret" you speak of?"""
     # bot.tree.clear_commands(guild = MY_GUILD)
     bot.tree.add_command(RenderGroup(bot), guild = MY_GUILD)
 

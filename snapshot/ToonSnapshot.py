@@ -48,8 +48,6 @@ class ToonSnapshot(SnapshotBase):
     if SNAPSHOT_DEBUG:
         notify.setDebug(1)
 
-    # notify.setDebug(1)
-
     def __init__(self, x=1024, y=1024, headless=False, filename="toon.png"):
         """
         :param int x: Width resolution of buffer image.
