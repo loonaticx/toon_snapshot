@@ -111,16 +111,17 @@ async def handler(websocket, path):
 
     if snapshot.type == RenderType.Toon:
         npcID = None
-        randomDNA = data.get("DNA_RANDOM")
+        dnaString = data.get("DNA_STRING")
+
+        # XXX user can try to submit a dna string and an npc,
+        # if they do this, then it will just make an npc.
         if data.get("RENDER_TYPE") == RenderType.NPC:
             npcID = data.get("NPC_ID")
             if not npcID:
                 npcID = random.choice(list(NPCToons.NPCToonDict.items()))[0]
-            randomDNA = False
-        elif data.get("RENDER_TYPE") == RenderType.Toon:
-            randomDNA = True
+
         snapshot.loadToon(
-            randomDNA = randomDNA,
+            dnaString=dnaString,
             npcID=npcID,
             bodyShot = bodyShot,
             wantNametag = data.get("WANT_NAMETAG"),

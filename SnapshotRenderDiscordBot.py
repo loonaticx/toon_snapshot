@@ -345,7 +345,7 @@ class RenderGroup(app_commands.Group):
 
     @app_commands.command(name = "toon")
     @app_commands.describe(
-        random_dna = 'Render a Random Toon',
+        dna_string = 'Render a Toon given a DNA String',
         npc = "Name of NPC to render",
         toon_name = "Name of Toon",
         nametag = "Display nametag?"
@@ -355,7 +355,8 @@ class RenderGroup(app_commands.Group):
     )
     async def render_toon(
             self, interaction: discord.Interaction,
-            random_dna: Optional[bool] = True, npc: Optional[str] = None,
+            dna_string: Optional[str] = None,
+            npc: Optional[str] = None,
             toon_name: Optional[str] = None, nametag: Optional[bool] = True,
             frame_type: Optional[FrameType] = FrameType.Bodyshot,
             eye_type: Optional[EyeType] = EyeType.NormalOpen,
@@ -373,6 +374,8 @@ class RenderGroup(app_commands.Group):
         renderConfig["EYE_TYPE"] = eye_type
         renderConfig["MUZZLE_TYPE"] = muzzle_type
         renderConfig["ACCESSORIES_RANDOM"] = random_accessories
+        # note: this is a string but ToonSnapshot will convert it into bytes later
+        renderConfig["DNA_STRING"] = dna_string
 
         if not npc:
             renderConfig["RENDER_TYPE"] = RenderType.Toon

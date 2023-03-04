@@ -71,7 +71,7 @@ class ToonSnapshot(SnapshotBase):
         """
         super().doSnapshot()
 
-    def loadToon(self, randomDNA=True, npcID=None, dnaString=None, accData=None, expressionID=1, randomExpression=True,
+    def loadToon(self, npcID=None, dnaString=None, accData=None, expressionID=1, randomExpression=True,
                  bodyShot=True, wantNametag=True, customName=None, customPhrase=None, speedchatPhrase=None,
                  chatBubbleType=ChatBubbleType.Normal, muzzleType=None, randomAccessories=False
                  ):
@@ -94,7 +94,7 @@ class ToonSnapshot(SnapshotBase):
         if randomExpression:
             expressionID = random.choice(list(ToonExpressions.keys()))
 
-        self.notify.info(f"{self.notify.getTime()}Loading Toon with properties: {(randomDNA, npcID, dnaString)}")
+        self.notify.info(f"{self.notify.getTime()}Loading Toon with properties: {(npcID, dnaString)}")
         self.actorDNA = ToonDNAExtended.ToonDNAExtended()
         self.actor = Toon.Toon()
 
@@ -103,18 +103,26 @@ class ToonSnapshot(SnapshotBase):
         else:
             self.actor.setName(self.nameGenerator.randomName())
 
+        randomDNA = False
+        if npcID:
+            self.actor = NPCToons.createLocalNPC(npcID)
+        if dnaString:
+            dnaString = dnaString.replace("b'", "").replace("'", "")
+            # hacky, but this is to remove double slashes \\ from the bytes string
+            dnaString = dnaString.encode().decode('unicode_escape').encode("raw_unicode_escape")
+            if self.actorDNA.isValidNetString(dnaString):
+                self.actor.setDNAString(dnaString)
+            else:
+                print(f"invalid netstring: {dnaString}")
+                randomDNA = True
+        # ok, let's just pass a random dna since we cant parse the given dna string (or wasn't given one)
+        else:
+            randomDNA = True
+
         if randomDNA:
             self.actorDNA.newToonRandom()
             self.actorDNA.topTex, self.actorDNA.topTexColor, self.actorDNA.sleeveTex, self.actorDNA.sleeveTexColor = ToonDNAExtended.getRandomTop(self.actorDNA.gender)
             self.actorDNA.botTex, self.actorDNA.botTexColor = ToonDNAExtended.getRandomBottom(self.actorDNA.gender)
-        elif npcID:
-            self.actor = NPCToons.createLocalNPC(npcID)
-            dnaString = 1
-        else:
-            self.actor.setDNAString(dnaString)  # do we need to do makeNetString here instead? idk
-
-        if dnaString is None:
-            # temp bc idk what to do here just yettt
             self.actor.setDNA(self.actorDNA)
 
         self.loadAccessories(accData, randomAccessories)
@@ -140,6 +148,9 @@ class ToonSnapshot(SnapshotBase):
             bodyShot = bodyShot, wantNametag = wantNametag, customPhrase = customPhrase,
             chatBubbleType = chatBubbleType, muzzleType=muzzleType
         )
+
+        # if not dnaString:
+        #     self.makeDNAString()
 
         # useful functions for later
         # reapplyCheesyEffect
@@ -294,6 +305,9 @@ class ToonSnapshot(SnapshotBase):
         # Move it back to fit around the target
         offset = ((height / 2.0) / tan(deg2Rad((fillFactor * effectiveFOV) / 2.0)))
         self.camera.setY(self.camera, -offset)
+
+    def makeDNAString(self):
+        print(self.actorDNA.makeNetString())
 
     def cleanup(self):
         """

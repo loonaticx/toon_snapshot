@@ -13,7 +13,7 @@ class RenderSettings:
         # /render: context-specific
         "NAME": None,  # generate random if None
         # this is a placeholder value; at the end of the day, DNA_string will dictate if random dna.
-        "DNA_RANDOM": True,
+        "DNA_RANDOM": True,  # this is useless for toons
         "DNA_HAPHAZARD": False,  # Special cases like the Suits
         "SPEEDCHAT_PHRASE": None,  # speedchat phrase id if not None
         "POSE_PRESET": None,  # context specific, None -> random
