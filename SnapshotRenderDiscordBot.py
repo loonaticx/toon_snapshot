@@ -410,9 +410,9 @@ class RenderGroup(app_commands.Group):
     @app_commands.command(name = "doodle")
     @app_commands.describe(
         random_dna = 'unfinished',
-        say = "Make Doodle say input phrase",
-        doodle_name = "Name of Doodle (default random)",
-        nametag = "Display nametag? (defualt True)"
+        say = "Make Doodle say something",
+        doodle_name = "Name of Doodle",
+        nametag = "Display nametag?"
     )
     # TOOD: move all customizable doodle dna params to another command, have it spit out a shorthand dna code to parse
     async def render_doodle(
