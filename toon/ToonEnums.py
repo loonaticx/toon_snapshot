@@ -21,3 +21,10 @@ class MuzzleType(IntEnum):
     Sad = 4
     Shock = 5
     Smile = 6
+
+
+class AccessoryType(IntEnum):
+    Hat = 1
+    Glasses = 2
+    Backpack = 3
+    Shoes = 4

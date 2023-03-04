@@ -15,7 +15,8 @@ from panda3d.core import LVecBase3f, Vec3, deg2Rad
 
 import random
 from math import tan
-from modtools.extensions.toon_snapshot.snapshot.RenderEnums import RenderType, ChatBubbleType, ChatFlag, MuzzleType
+from modtools.extensions.toon_snapshot.snapshot.RenderEnums import RenderType, ChatBubbleType, ChatFlag
+from modtools.extensions.toon_snapshot.toon.ToonEnums import AccessoryType, MuzzleType
 
 if __name__ == "__main__":
     from modtools.modbase import ModularStart
@@ -32,6 +33,8 @@ from toontown.toon import NPCToons
 from modtools.extensions.toon_snapshot.snapshot.SnapshotBase import SnapshotBase
 from modtools.extensions.toon_snapshot.snapshot.SnapshotExpressions import ToonExpressions
 from toontown.makeatoon.NameGenerator import NameGenerator
+import re
+# num = re.findall(r'\d+', inp_str)
 
 try:
     from panda3d.otp import CFSpeech, CFTimeout
@@ -182,6 +185,38 @@ class ToonSnapshot(SnapshotBase):
         self.actor.setGlasses(ad[3], ad[4], ad[5])
         self.actor.setBackpack(ad[6], ad[7], ad[8])
         self.actor.setShoes(ad[9], ad[10], ad[11])
+        # self.printAccessories()
+
+
+    def parseCustomAccData(self, accDataIn):
+        """
+        todo
+        :param accDataIn: dict
+        :type accDataIn:
+        :return:
+        :rtype:
+        """
+        """
+        {
+        "ht": None,
+        "gl": "(15, 0, 0)",
+        "bp": None,
+        "sh": "3, 47, 0"
+        }
+        """
+        accTypes = [AccessoryType.Hat, AccessoryType.Glasses, AccessoryType.Backpack, AccessoryType.Shoes]
+        accData = [0] * 12
+        for acc_item in accTypes:
+            if accDataIn.get(acc_item):
+                pass
+
+    def printAccessories(self):
+        print(
+            f"--\nht: {self.actor.hat}\ngl: {self.actor.glasses}\nbp: {self.actor.backpack}\nsh: {self.actor.shoes}\n--"
+        )
+        hat_en = self.actor.hat.encode()
+        print(hat_en)
+        print(self.actor.hat.decode())
 
     def poseShot(self, expression, wantNametag, bodyShot=True, customPhrase=None, speedchatPhrase=None,
                  chatBubbleType=ChatBubbleType.Normal, muzzleType=None):
