@@ -17,12 +17,15 @@ First, clone the base ``modtools`` into the root of your Toontown source:
 git clone https://github.com/loonaticx/modtools
 ```
 
+After cloning, cd into ``modtools/extensions`` and clone the ``toon_snapshot`` repo.
+
 By the end, your file structure should look similar to something like:
 ```
 - src
     - astron
     - modtools
-        - toon_snapshot
+        - extensions
+            - toon_snapshot
     - otp
     - toontown
     - win32
